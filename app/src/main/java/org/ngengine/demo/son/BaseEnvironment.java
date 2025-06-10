@@ -43,6 +43,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.FogFilter;
 import com.jme3.post.filters.LightScatteringFilter;
+import com.jme3.post.filters.SoftBloomFilter;
 import com.jme3.post.filters.ToneMapFilter;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Node;
@@ -106,7 +107,7 @@ public class BaseEnvironment implements Component<Object>, AsyncAssetLoadingFrag
         fpp.setNumSamples(4);
         viewPort.addProcessor(fpp);
 
-        ToneMapFilter tonemap = new ToneMapFilter(Vector3f.UNIT_XYZ.mult(4f));
+        ToneMapFilter tonemap = new ToneMapFilter(Vector3f.UNIT_XYZ.mult(3f));
         fpp.addFilter(tonemap);
 
         LightScatteringFilter lightScattering = new LightScatteringFilter(dl.getDirection().mult(-300));
@@ -119,6 +120,13 @@ public class BaseEnvironment implements Component<Object>, AsyncAssetLoadingFrag
         fog.setFogColor(new ColorRGBA(35.0f / 255.0f, 0.0f, 110f / 255.0f, 1f));
         lightScattering.setLightDensity(4.5f);
         fpp.addFilter(fog);
+
+        SoftBloomFilter bloom = new SoftBloomFilter();
+        bloom.setBilinearFiltering(true);
+        bloom.setGlowFactor(0.1f);
+        
+         
+        fpp.addFilter(bloom);
     }
 
     @Override

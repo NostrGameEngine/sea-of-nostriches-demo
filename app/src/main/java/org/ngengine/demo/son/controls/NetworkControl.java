@@ -37,6 +37,7 @@ import com.jme3.effect.ParticleEmitter;
 import com.jme3.effect.ParticleMesh.Type;
 import com.jme3.effect.influencers.EmptyParticleInfluencer;
 import com.jme3.material.Material;
+import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Transform;
@@ -69,17 +70,32 @@ public class NetworkControl extends AbstractControl {
     private final double NETSYNC_MIN_RATE = 1000.0 / 5.0;
     private final double NETSYNC_MAX_RATE = 1000.0 / 25.0;
     private final double MAX_D = 2000.0;
+    private final int EMIT_PARTICLE_EVERY_N_PACKETS = 3;
     private Spatial dataStreamSpatial;
-    private Instant lastReceivedAnimPacket = Instant.ofEpochMilli(0);
     private Instant lastReceivedTransformPacket = Instant.ofEpochMilli(0);
+    private int particlesSkipPackets = 0;
 
     public NetworkControl(AssetManager assetManager) {
         dataParticleMaterial = new Material(assetManager, "Common/MatDefs/Misc/Particle.j3md");
+        dataParticleMaterial.setTexture("Texture", assetManager.loadTexture("Textures/matrixhex.png"));
+        dataParticleMaterial.getAdditionalRenderState().setBlendMode(BlendMode.AlphaAdditive);
+
         dataParticle = new ParticleEmitter("Data Particles", Type.Triangle, 101);
         dataParticle.setParticleInfluencer(new EmptyParticleInfluencer());
         dataParticle.setInWorldSpace(true);
         dataParticle.setMaterial(dataParticleMaterial);
         dataParticle.setParticlesPerSec(0);
+        dataParticle.setImagesX(6);
+        dataParticle.setImagesY(7);
+        dataParticle.setSelectRandomImage(true);
+
+        dataParticle.setStartColor(ColorRGBA.Magenta.mult(10f).setAlpha(0.5f));
+        dataParticle.setEndColor(ColorRGBA.Magenta.mult(10f).setAlpha(0.1f));
+        dataParticle.setStartSize(5f);
+        dataParticle.setEndSize(6.3f);
+        dataParticle.setLowLife(4.5f);
+        dataParticle.setHighLife(4.5f);
+
     }
 
     @Override
@@ -92,13 +108,15 @@ public class NetworkControl extends AbstractControl {
         dataStreamSpatial = null;
     }
 
+    long lastTimestamp = 0;
+
     protected void drawPacketSent(Vector3f to) {
-        dataParticle.setStartColor(ColorRGBA.Magenta.clone().setAlpha(0.8f));
-        dataParticle.setEndColor(ColorRGBA.Pink.clone().setAlpha(0f));
-        dataParticle.setStartSize(0.3f);
-        dataParticle.setEndSize(0.3f);
-        dataParticle.setLowLife(2.5f);
-        dataParticle.setHighLife(2.5f);
+        particlesSkipPackets++;
+        if( particlesSkipPackets < EMIT_PARTICLE_EVERY_N_PACKETS) {
+            return; 
+        }
+        particlesSkipPackets = 0;
+   
 
         emittedParticle.clear();
         dataParticle.emitParticles(1, emittedParticle);
@@ -117,7 +135,7 @@ public class NetworkControl extends AbstractControl {
         particle.position.set(dataStreamSpatial.getWorldTranslation());
         particle.angle = 0f;
         particle.rotateSpeed = 0f;
-        particle.velocity.set(to.subtract(particle.position).normalizeLocal().mult(120.3f));
+        particle.velocity.set(to.subtract(particle.position).normalizeLocal().mult(80.3f));
     }
 
     public void sendUpdatePackets(Set<Map.Entry<HostedConnection, Spatial>> peers) {
@@ -130,6 +148,7 @@ public class NetworkControl extends AbstractControl {
         double baseMinRate = NETSYNC_MIN_RATE;
         double baseMmaxRate = NETSYNC_MAX_RATE;
         double maxDistance = MAX_D;
+
 
         for (Map.Entry<HostedConnection, Spatial> p : peers) {
             try {
@@ -152,6 +171,8 @@ public class NetworkControl extends AbstractControl {
                 Long lastSentPosition = p.getKey().getAttribute("lspp");
                 if (lastSentPosition == null) lastSentPosition = 0l;
 
+                
+                
                 if (now - lastSentPosition >= expectedRate) {
                     p.getKey().setAttribute("lspp", now);
                     if (positionPacket == null) {
@@ -177,7 +198,6 @@ public class NetworkControl extends AbstractControl {
                     }
                     if (animPacket != null) {
                         p.getKey().send(animPacket);
-                        drawPacketSent(pPos);
                     }
                 }
             } catch (Exception e) {
