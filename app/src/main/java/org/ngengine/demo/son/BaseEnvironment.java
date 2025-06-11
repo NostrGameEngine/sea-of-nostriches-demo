@@ -101,32 +101,38 @@ public class BaseEnvironment implements Component<Object>, AsyncAssetLoadingFrag
         dl.setColor(ColorRGBA.White.mult(2.3f));
         rootNode.addLight(dl);
 
-        // post processing
-        FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
-        fpp.setFrameBufferDepthFormat(Format.Depth24Stencil8);
-        fpp.setNumSamples(4);
-        viewPort.addProcessor(fpp);
 
-        ToneMapFilter tonemap = new ToneMapFilter(Vector3f.UNIT_XYZ.mult(3f));
-        fpp.addFilter(tonemap);
+        String lowend = System.getProperty("lowend");
+        if(!"true".equals(lowend)){
+            System.out.println("Loading post processing filters...");
+            // post processing
+            FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
+            fpp.setFrameBufferDepthFormat(Format.Depth24Stencil8);
+            fpp.setNumSamples(4);
+            viewPort.addProcessor(fpp);
 
-        LightScatteringFilter lightScattering = new LightScatteringFilter(dl.getDirection().mult(-300));
-        lightScattering.setLightPosition(viewPort.getCamera().getLocation().add(dl.getDirection().mult(-1000)));
-        fpp.addFilter(lightScattering);
+            ToneMapFilter tonemap = new ToneMapFilter(Vector3f.UNIT_XYZ.mult(3f));
+            fpp.addFilter(tonemap);
 
-        FogFilter fog = new FogFilter();
-        fog.setFogDensity(0.4f);
-        fog.setFogDistance(200f);
-        fog.setFogColor(new ColorRGBA(35.0f / 255.0f, 0.0f, 110f / 255.0f, 1f));
-        lightScattering.setLightDensity(4.5f);
-        fpp.addFilter(fog);
+            LightScatteringFilter lightScattering = new LightScatteringFilter(dl.getDirection().mult(-300));
+            lightScattering.setLightPosition(viewPort.getCamera().getLocation().add(dl.getDirection().mult(-1000)));
+            fpp.addFilter(lightScattering);
 
-        SoftBloomFilter bloom = new SoftBloomFilter();
-        bloom.setBilinearFiltering(true);
-        bloom.setGlowFactor(0.1f);
-        
-         
-        fpp.addFilter(bloom);
+            FogFilter fog = new FogFilter();
+            fog.setFogDensity(0.4f);
+            fog.setFogDistance(200f);
+            fog.setFogColor(new ColorRGBA(35.0f / 255.0f, 0.0f, 110f / 255.0f, 1f));
+            lightScattering.setLightDensity(4.5f);
+            fpp.addFilter(fog);
+
+            SoftBloomFilter bloom = new SoftBloomFilter();
+            bloom.setBilinearFiltering(true);
+            bloom.setGlowFactor(0.1f);
+            
+            fpp.addFilter(bloom);
+        } else {
+            System.out.println("Lowend mode enabled: no post processing filters loaded.");
+        }
     }
 
     @Override
