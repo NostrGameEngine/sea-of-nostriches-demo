@@ -143,10 +143,19 @@ task traceNative(type: JavaExec) {
     description = 'Trace reflection and resource usage'
     mainClass =  application.mainClass.get()
     classpath = sourceSets.main.runtimeClasspath
-    jvmArgs = [
+    def jvmArgsList = [
         "-agentlib:native-image-agent=config-merge-dir=${project.projectDir}/trace",
-        '-Djava.awt.headless=true', '-XstartOnFirstThread'
+        '-Djava.awt.headless=true'
     ]
+
+    // add '-XstartOnFirstThread if macos
+    if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+        jvmArgsList.add('-XstartOnFirstThread')
+    }
+    
+    jvmArgs = jvmArgsList
+
+
     systemProperty 'java.awt.headless', 'false'
     systemProperty 'testMode', 'true'
     doFirst {
@@ -168,11 +177,128 @@ task traceNative(type: JavaExec) {
     }
 }
 
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 
+task generateEngineReflectionConfig {
+    group = 'graalvm'
+    description = 'Generate and merge reflection configuration the engine'
+    
+    doLast {
+        def baseConfigFile = file("${project.projectDir}/trace/base-reflect-config.json")
+        def reflectConfigFile = file("${project.projectDir}/trace/reflect-config.json")
+        
+        // Create directory if it doesn't exist
+        reflectConfigFile.parentFile.mkdirs()
+        
+        // Read existing base config if it exists
+        def baseConfig = []
+        if (baseConfigFile.exists()) {
+            println "Reading base config from: ${baseConfigFile.absolutePath}"
+            baseConfig = new JsonSlurper().parse(baseConfigFile)
+            println "Found ${baseConfig.size()} existing entries"
+        } else {
+            println "Base config file not found, starting with empty config"
+        }
+        
+        // Generate new reflection entries
+        def newEntries = []
+        def classCount = 0
+        def targetPackages = ['com.jme3', 'org.ngengine', 'com.bulletphysics']
+        
+        println "Scanning for classes in packages: ${targetPackages}"
+        
+        // Process all runtime classpath elements
+        configurations.runtimeClasspath.each { file ->
+            if (file.name.endsWith('.jar')) {
+                println "Processing JAR: ${file.name}"
+                
+                def jarFile = new java.util.jar.JarFile(file)
+                def entries = jarFile.entries()
+                
+                while (entries.hasMoreElements()) {
+                    def entry = entries.nextElement()
+                    def entryName = entry.name
+                    
+                    if (entryName.endsWith('.class')) {
+                        def className = entryName.substring(0, entryName.length() - 6).replace('/', '.')
+                        
+                        // Include only classes from target packages
+                        if (targetPackages.any { pkg -> className.startsWith(pkg) }) {
+                            newEntries << [
+                                name: className,
+                                methods: [
+                                    [
+                                        name: "<init>",
+                                        parameterTypes: []
+                                    ]
+                                ],
+                                allDeclaredConstructors: true,
+                                allPublicConstructors: true,
+                                allDeclaredMethods: true,
+                                allPublicMethods: true,
+                                allDeclaredFields: true,
+                                allPublicFields: true
+                            ]
+                            
+                            classCount++
+                            if (classCount % 100 == 0) {
+                                println "  Processed ${classCount} classes..."
+                            }
+                        }
+                    }
+                }
+                
+                jarFile.close()
+            }
+        }
+        
+        // Add wildcard entries for these packages
+        targetPackages.each { pkg ->
+            newEntries << [
+                name: "${pkg}.**",
+                allDeclaredConstructors: true,
+                allPublicConstructors: true,
+                allDeclaredMethods: true,
+                allPublicMethods: true,
+                allDeclaredFields: true,
+                allPublicFields: true
+            ]
+        }
+        
+       
+        
+        println "Generated ${newEntries.size()} new entries"
+        
+        // Merge configs - first create a map of existing entries by name
+        def configMap = [:]
+        baseConfig.each { entry ->
+            configMap[entry.name] = entry
+        }
+        
+        // Add or update with new entries
+        newEntries.each { entry ->
+            configMap[entry.name] = entry
+        }
+        
+        // Convert map back to list
+        def mergedConfig = configMap.values().toList()
+        
+        // Write the merged config file
+        def jsonOutput = JsonOutput.toJson(mergedConfig)
+        reflectConfigFile.text = JsonOutput.prettyPrint(jsonOutput)
+        
+        println "Merged config with ${mergedConfig.size()} total entries saved to: ${reflectConfigFile.absolutePath}"
+        println "File size: ${reflectConfigFile.length()} bytes"
+    }
+}
+
+ 
 task buildNativeExecutable {
     group = 'graalvm'
     description = 'Build native executable for current platform'
     dependsOn 'nativeCompile' 
+    dependsOn generateEngineReflectionConfig
     doLast {
         def buildDirNative = "${project.buildDir}/native/nativeCompile"
         def executableName = graalvmNative.binaries.main.imageName.get()

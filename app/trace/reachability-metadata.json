@@ -278,6 +278,10 @@
         {
           "name": "<init>",
           "parameterTypes": []
+        },
+        {
+          "name": "clone",
+          "parameterTypes": []
         }
       ]
     },
@@ -1149,6 +1153,12 @@
     },
     {
       "type": "java.util.Arrays$ArrayList"
+    },
+    {
+      "type": "java.util.Collections$UnmodifiableCollection"
+    },
+    {
+      "type": "java.util.Collections$UnmodifiableMap"
     },
     {
       "type": "java.util.Collections$UnmodifiableRandomAccessList"
@@ -2339,6 +2349,15 @@
       ]
     },
     {
+      "type": "org.ngengine.demo.son.LoadingWindow",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "org.ngengine.demo.son.WebpImageLoader",
       "methods": [
         {
@@ -2382,6 +2401,26 @@
     },
     {
       "type": "org.ngengine.demo.son.ocean.IBOceanLayer",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.ngengine.demo.son.packets.AnimPacket",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.ngengine.demo.son.packets.TransformPacket",
+      "allDeclaredFields": true,
       "methods": [
         {
           "name": "<init>",
@@ -2513,6 +2552,15 @@
       ]
     },
     {
+      "type": "org.ngengine.nostr4j.event.tracker.PassthroughEventTracker",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "org.ngengine.platform.jvm.JVMAsyncPlatform",
       "methods": [
         {
@@ -2531,13 +2579,22 @@
       ]
     },
     {
-      "type": "org.ngengine.webp.AWTWebpImageLoader"
+      "type": "org.ngengine.webp.AWTWebpImageLoader",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "org.ngengine.webp.WebPLoader"
     },
     {
       "type": "org.ngengine.webp.WebpImageLoader"
+    },
+    {
+      "type": "org.slf4j.jul.JULServiceProvider"
     },
     {
       "type": "sun.awt.X11.XToolkit",
@@ -4638,6 +4695,220 @@
         },
         {
           "name": "xid"
+        }
+      ]
+    },
+    {
+      "type": "tel.schich.libdatachannel.CandidatePair",
+      "methods": [
+        {
+          "name": "parse",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "tel.schich.libdatachannel.DataChannelReliability",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "boolean",
+            "boolean",
+            "long",
+            "int"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "tel.schich.libdatachannel.LibDataChannel",
+      "methods": [
+        {
+          "name": "log",
+          "parameterTypes": [
+            "int",
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "registerForCleanup",
+          "parameterTypes": [
+            "java.lang.Object",
+            "long"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "tel.schich.libdatachannel.PeerConnectionListener",
+      "methods": [
+        {
+          "name": "onChannelAvailable",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "onChannelBinaryMessage",
+          "parameterTypes": [
+            "int",
+            "java.nio.ByteBuffer"
+          ]
+        },
+        {
+          "name": "onChannelBufferedAmountLow",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "onChannelClosed",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "onChannelError",
+          "parameterTypes": [
+            "int",
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "onChannelOpen",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "onChannelTextMessage",
+          "parameterTypes": [
+            "int",
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "onDataChannel",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "onGatheringStateChange",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "onIceStateChange",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "onLocalCandidate",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "onLocalDescription",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "onSignalingStateChange",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "onStateChange",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "onTrack",
+          "parameterTypes": [
+            "int"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "tel.schich.libdatachannel.exception.FailureException",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "tel.schich.libdatachannel.exception.InvalidException",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "tel.schich.libdatachannel.exception.NativeOperationException",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "int",
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "tel.schich.libdatachannel.exception.NotAvailableException",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "tel.schich.libdatachannel.exception.TooSmallException",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "tel.schich.libdatachannel.exception.UnknownFailureException",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "int",
+            "java.lang.String"
+          ]
         }
       ]
     }
