@@ -51,10 +51,7 @@ public class Settings {
 
     public static final String GAME_NAME = "soo";
     public static final int GAME_VERSION = 100;
-    public static final List<String> GAME_RELAYS = List.of("wss://relay.ngengine.org",
-            "wss://relay.snort.social",
-            "wss://relay.damus.io",
-            "wss://relay.primal.net");
+    public static final List<String> GAME_RELAYS = List.of("wss://relay.ngengine.org" );
     public static final String TURN_SERVER = "wss://relay.ngengine.org";
     public static final NostrSigner SIGNER = new NostrKeyPairSigner(new NostrKeyPair(NostrPrivateKey.generate()));
 
