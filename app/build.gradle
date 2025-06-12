@@ -101,7 +101,10 @@ graalvmNative {
                 '-H:+StaticExecutableWithDynamicLibC',
                 '-march=compatibility',
                 '-Djava.awt.headless=true',
+                "-Djava.util.logging.config.file=release-logging.properties",
                 '-H:IncludeResources=.*',
+                "-H:IncludeResources=release-logging.properties",
+                "-H:Log=registerResource:3",
                 '-H:Name=' + buildName,
                 "-H:ConfigurationFileDirectories=${project.projectDir}/trace"
             ]
