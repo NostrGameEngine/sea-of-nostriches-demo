@@ -44,8 +44,8 @@ public class SonGame {
     public static void main(String[] args) throws InterruptedException {
         AppSettings settings = new AppSettings(true);
         settings.setRenderer(AppSettings.LWJGL_OPENGL32);
-        settings.setWidth(1280);
-        settings.setHeight(720);
+        settings.setWidth(1980);
+        settings.setHeight(1080);
         settings.setGammaCorrection(true);
         settings.setSamples(4);
         settings.setStencilBits(8);

@@ -36,12 +36,6 @@ import com.jme3.input.ChaseCamera;
 import com.jme3.input.InputManager;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.KeyTrigger;
-import com.jme3.input.event.JoyAxisEvent;
-import com.jme3.input.event.JoyButtonEvent;
-import com.jme3.input.event.KeyInputEvent;
-import com.jme3.input.event.MouseButtonEvent;
-import com.jme3.input.event.MouseMotionEvent;
-import com.jme3.input.event.TouchEvent;
 import com.jme3.material.MatParam;
 import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
@@ -50,7 +44,6 @@ import com.jme3.network.HostedConnection;
 import com.jme3.network.Message;
 import com.jme3.network.MessageListener;
 import com.jme3.network.Server;
-import com.jme3.post.FilterPostProcessor;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
 import com.jme3.renderer.queue.RenderQueue.ShadowMode;
@@ -67,12 +60,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.ngengine.AsyncAssetManager;
 import org.ngengine.DevMode;
+import org.ngengine.ViewPortManager;
 import org.ngengine.components.Component;
 import org.ngengine.components.ComponentManager;
-import org.ngengine.components.fragments.AssetLoadingFragment;
-import org.ngengine.components.fragments.InputHandlerFragment;
 import org.ngengine.components.fragments.LogicFragment;
-import org.ngengine.components.fragments.MainViewPortFragment;
 import org.ngengine.demo.son.controls.BoatAnimationControl;
 import org.ngengine.demo.son.controls.BoatControl;
 import org.ngengine.demo.son.controls.NetworkControl;
@@ -93,9 +84,6 @@ public class PlayGameState
     implements
         Component<P2PChannel>,
         LogicFragment,
-        MainViewPortFragment,
-        InputHandlerFragment,
-        AssetLoadingFragment,
         ConnectionListener,
         MessageListener<HostedConnection>,
         NostrRTCRoomPeerDiscoveredListener {
@@ -110,30 +98,14 @@ public class PlayGameState
 
     private NLabel hudSpeed;
     private Runner runner;
-    private AssetManager assetManager;
-    private ViewPort viewPort;
-    private InputManager inputManager;
-
+ 
     @Override
     public Object getSlot() {
         return "mainState";
     }
 
-    @Override
-    public void loadAssets(AssetManager assetManager) {
-        this.assetManager = assetManager;
-    }
-
-    @Override
-    public void receiveInputManager(InputManager inputManager) {
-        this.inputManager = inputManager;
-    }
-
-    @Override
-    public void receiveMainViewPort(ViewPort viewPort) {
-        this.viewPort = viewPort;
-    }
-
+ 
+ 
     @Override
     public void onNudge(
         ComponentManager mng,
@@ -225,8 +197,10 @@ public class PlayGameState
     }
 
     @Override
-    public void updateAppLogic(float tpf) {
-        try {
+    public void updateAppLogic(ComponentManager mng, float tpf){
+        try{
+            AssetManager assetManager = mng.getGlobalInstance(AssetManager.class);
+    
             frame++;
             if (frame == 2) {
                 spawnBoat(null);
@@ -257,6 +231,7 @@ public class PlayGameState
 
     @Override
     public void messageReceived(HostedConnection source, Message m) {
+        AssetManager assetManager = componentManager.getGlobalInstance(AssetManager.class);
         this.runner.run(() -> {
                 try {
                     Spatial boat = remoteBoats.get(source);
@@ -292,9 +267,13 @@ public class PlayGameState
         PhysicsManager physics = componentManager.getComponent(PhysicsManager.class);
 
         boolean isRemote = conn != null;
-        AsyncAssetManager assetManager = (AsyncAssetManager) this.assetManager;
+        AsyncAssetManager assetManager = componentManager.getGlobalInstance(AsyncAssetManager.class);
+        ViewPortManager vpm = componentManager.getGlobalInstance(ViewPortManager.class);
+        ViewPort viewPort = vpm.getMainSceneViewPort();
+        Node rootNode = vpm.getRootNode(viewPort);
 
-        Node rootNode = getRootNode(viewPort);
+        InputManager inputManager = componentManager.getGlobalInstance(InputManager.class);
+
         assetManager.runInLoaderThread(
             t -> {
                 Node playerSpatial = (Node) assetManager.loadModel("Models/boat/boat.gltf");
@@ -406,26 +385,5 @@ public class PlayGameState
             }
         );
     }
-
-    public void onJoyAxisEvent(JoyAxisEvent evt) {}
-
-    public void onJoyButtonEvent(JoyButtonEvent evt) {}
-
-    public void onMouseMotionEvent(MouseMotionEvent evt) {}
-
-    public void onMouseButtonEvent(MouseButtonEvent evt) {}
-
-    public void onKeyEvent(KeyInputEvent evt) {}
-
-    @Override
-    public void updateMainViewPort(ViewPort viewPort, float tpf) {}
-
-    @Override
-    public void onTouchEvent(TouchEvent evt) {}
-
-    @Override
-    public void loadMainViewPortFilterPostprocessor(AssetManager assetManager, FilterPostProcessor fpp) {}
-
-    @Override
-    public void receiveMainViewPortFilterPostProcessor(FilterPostProcessor fpp) {}
+ 
 }

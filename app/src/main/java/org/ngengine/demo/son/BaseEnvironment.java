@@ -51,24 +51,26 @@ import com.jme3.scene.Spatial;
 import com.jme3.texture.Image.Format;
 import com.jme3.texture.Texture;
 import com.jme3.util.SkyFactory;
+
+import java.util.function.Consumer;
+
 import org.ngengine.AsyncAssetManager;
+import org.ngengine.ViewPortManager;
 import org.ngengine.components.Component;
 import org.ngengine.components.ComponentManager;
 import org.ngengine.components.fragments.AsyncAssetLoadingFragment;
-import org.ngengine.components.fragments.MainViewPortFragment;
 import org.ngengine.runner.Runner;
+import org.ngengine.store.DataStore;
 import org.ngengine.store.DataStoreProvider;
 
-public class BaseEnvironment implements Component<Object>, AsyncAssetLoadingFragment, MainViewPortFragment {
+public class BaseEnvironment implements Component<Object>, AsyncAssetLoadingFragment {
 
     private Spatial sky;
     private AudioNode backgroundMusic;
-    private AssetManager assetManager;
-    private ViewPort viewPort;
 
     @Override
-    public void loadAssetsAsync(AsyncAssetManager assetManager) {
-        this.assetManager = assetManager;
+    public void loadAssetsAsync(ComponentManager mng, AsyncAssetManager assetManager, DataStore assetCache, Consumer<Object> preload){
+        
 
         TextureKey key = new TextureKey("skies/alienSkyLOWEXP.png", true);
         key.setGenerateMips(false);
@@ -85,11 +87,15 @@ public class BaseEnvironment implements Component<Object>, AsyncAssetLoadingFrag
 
     @Override
     public void onEnable(ComponentManager mng, Runner runner, DataStoreProvider dataStore, boolean firstTime, Object arg) {
+        AssetManager assetManager = mng.getGlobalInstance(AssetManager.class);
+        ViewPortManager vpm = mng.getGlobalInstance(ViewPortManager.class);
+        ViewPort viewPort = vpm.getMainSceneViewPort();
+        Node rootNode = vpm.getRootNode(viewPort);
+
         // music
         backgroundMusic.play();
 
         // sky
-        Node rootNode = getRootNode(viewPort);
         rootNode.attachChild(backgroundMusic);
         rootNode.attachChild(sky);
         EnvironmentProbeControl.tagGlobal(sky);
@@ -138,17 +144,5 @@ public class BaseEnvironment implements Component<Object>, AsyncAssetLoadingFrag
     @Override
     public void onDisable(ComponentManager mng, Runner runner, DataStoreProvider dataStore) {}
 
-    @Override
-    public void receiveMainViewPort(ViewPort viewPort) {
-        this.viewPort = viewPort;
-    }
 
-    @Override
-    public void updateMainViewPort(ViewPort viewPort, float tpf) {}
-
-    @Override
-    public void loadMainViewPortFilterPostprocessor(AssetManager assetManager, FilterPostProcessor fpp) {}
-
-    @Override
-    public void receiveMainViewPortFilterPostProcessor(FilterPostProcessor fpp) {}
 }

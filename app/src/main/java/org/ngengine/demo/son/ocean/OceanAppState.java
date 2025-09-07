@@ -43,7 +43,6 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Plane;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
-import com.jme3.post.FilterPostProcessor;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
@@ -63,10 +62,12 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+
+import org.ngengine.AsyncAssetManager;
+import org.ngengine.ViewPortManager;
 import org.ngengine.components.Component;
 import org.ngengine.components.ComponentManager;
-import org.ngengine.components.fragments.AssetLoadingFragment;
-import org.ngengine.components.fragments.MainViewPortFragment;
+import org.ngengine.components.fragments.LogicFragment;
 import org.ngengine.components.fragments.RenderFragment;
 import org.ngengine.demo.son.PhysicsManager;
 import org.ngengine.demo.son.controls.BuoyancyControl;
@@ -77,7 +78,7 @@ import org.ngengine.runner.Runner;
 import org.ngengine.store.DataStore;
 import org.ngengine.store.DataStoreProvider;
 
-public class OceanAppState implements Component<Object>, MainViewPortFragment, RenderFragment, AssetLoadingFragment {
+public class OceanAppState implements Component<Object>, LogicFragment {
 
     private static final Logger log = Logger.getLogger(OceanAppState.class.getName());
     private Geometry oceanGeometry;
@@ -104,9 +105,6 @@ public class OceanAppState implements Component<Object>, MainViewPortFragment, R
     private ViewPort reflectionViewPort;
     private AudioNode oceanWavesSound;
     private IBOcean ibocean;
-    private RenderManager renderManager;
-    private AssetManager assetManager;
-    private ViewPort viewPort;
     private ComponentManager componentManager;
 
     @Override
@@ -119,34 +117,23 @@ public class OceanAppState implements Component<Object>, MainViewPortFragment, R
         this.VERTEX_DENSITY = vertexDensity;
     }
 
+    public AsyncAssetManager getAssetManager() {
+        return componentManager.getGlobalInstance(AsyncAssetManager.class);
+    }
+
     public OceanAppState() {
         this(256);
     }
 
-    public AssetManager getAssetManager() {
-        return assetManager;
-    }
-
-    @Override
-    public void receiveRenderManager(RenderManager renderManager) {
-        this.renderManager = renderManager;
-    }
-
-    @Override
-    public void loadAssets(AssetManager assetManager) {
-        this.assetManager = assetManager;
-    }
-
-    @Override
-    public void receiveMainViewPort(ViewPort viewPort) {
-        this.viewPort = viewPort;
-    }
+  
+  
 
     public BulletAppState getPhysics() {
         return componentManager.getComponent(PhysicsManager.class).getPhysics();
     }
 
     private void initializeReflectionView(ViewPort vp, Node scene) {
+        RenderManager renderManager = componentManager.getGlobalInstance(RenderManager.class);
         FrameBuffer refbuf = new FrameBuffer(reflectionSize, reflectionSize, 1);
         refbuf.setMultiTarget(true);
         {
@@ -177,14 +164,19 @@ public class OceanAppState implements Component<Object>, MainViewPortFragment, R
 
     @Override
     public void onEnable(
-        ComponentManager fragmentManager,
+        ComponentManager componentManager,
         Runner runner,
         DataStoreProvider dataStoreProvider,
         boolean firstTime,
         Object arg
     ) {
-        this.componentManager = fragmentManager;
-        Node rootNode = getRootNode(viewPort);
+        this.componentManager = componentManager;
+        ViewPortManager vpm = componentManager.getGlobalInstance(ViewPortManager.class);
+        
+        ViewPort viewPort = vpm.getMainSceneViewPort();
+        Node rootNode = vpm.getRootNode(viewPort);
+        AssetManager assetManager = componentManager.getGlobalInstance(AsyncAssetManager.class);
+
 
         oceanWavesSound = new AudioNode(assetManager, "Sounds/Beach_Ocean_Waves_Fienup_001_mono.ogg", DataType.Buffer);
         oceanWavesSound.setLooping(true);
@@ -233,7 +225,10 @@ public class OceanAppState implements Component<Object>, MainViewPortFragment, R
     }
 
     @Override
-    public void updateMainViewPort(ViewPort vp, float tpf) {
+    public void updateAppLogic(ComponentManager mng, float tpf){
+        AssetManager assetManager = mng.getGlobalInstance(AsyncAssetManager.class);
+        ViewPort vp = mng.getGlobalInstance(ViewPortManager.class).getMainSceneViewPort();
+
         float windStrength = 60f;
         this.WIND.set(0, 0, windStrength);
 
@@ -251,6 +246,7 @@ public class OceanAppState implements Component<Object>, MainViewPortFragment, R
 
     @Override
     public void onDisable(ComponentManager fragmentManager, Runner runner, DataStoreProvider dataStoreProvider) {
+        RenderManager renderManager = fragmentManager.getGlobalInstance(RenderManager.class);
         if (oceanGeometry != null) oceanGeometry.removeFromParent();
         if (reflectionViewPort != null) renderManager.removePreView(reflectionViewPort);
         if (oceanWavesSound != null) {
@@ -401,12 +397,5 @@ public class OceanAppState implements Component<Object>, MainViewPortFragment, R
         }
     }
 
-    @Override
-    public void updateRender(RenderManager renderer) {}
-
-    @Override
-    public void loadMainViewPortFilterPostprocessor(AssetManager assetManager, FilterPostProcessor fpp) {}
-
-    @Override
-    public void receiveMainViewPortFilterPostProcessor(FilterPostProcessor fpp) {}
+ 
 }

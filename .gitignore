@@ -5,4 +5,6 @@
 build
 bin
 dist
-app/trace/reflect-config.json
+*.hprof
+.idea
+.DS_Store
