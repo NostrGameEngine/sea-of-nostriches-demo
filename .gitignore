@@ -10,4 +10,4 @@ gradle-local.properties
 node_modules/
 *.map
 .sourcemaps
-platform-ios-capacitor/ios
+.settings

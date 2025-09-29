@@ -1,0 +1,84 @@
+
+import com.github.gradle.node.NodeExtension
+import com.github.gradle.node.npm.task.NpxTask
+
+plugins {
+    id 'com.github.node-gradle.node' version '7.1.0'
+}
+
+node {
+    version = '24.2.0'
+    npmVersion = '11.3.0'
+    download = true
+    workDir = file("${project.buildDir}/nodejs")
+    npmWorkDir = file("${project.buildDir}/npm")
+}
+
+task npmCi(type: NpmTask) {
+    args = ['ci']
+    workingDir = file("${projectDir}")
+}
+
+
+task capConf {
+    doLast {
+        def f = file("${projectDir}/capacitor.config.json")
+        if (f.exists()) {
+            def c = new groovy.json.JsonSlurper().parseText(f.text)
+            c.appName = appFullName
+            c.appId = appId
+            f.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(c))
+            println "Updated capacitor.config.json"
+        }    
+    }
+}
+
+
+ 
+
+task capIOS(type: NpxTask) {
+    dependsOn capConf
+    dependsOn npmCi
+    dependsOn nodeSetup
+    command.set("cap")
+    args.set(["add", "ios"])
+    ignoreExitValue = true 
+}
+
+task capIOSSync(type: NpxTask) {
+    dependsOn capIOS
+    dependsOn ':platform-web:buildWebApp'
+    command.set("cap")
+    args.set(["sync"])
+}
+
+
+task runIOSCapApp(type: Exec) {
+    dependsOn capIOSSync
+
+    doFirst {
+        def nodeExt = project.extensions.getByType(NodeExtension)
+        def npxPath = nodeExt.npxCommand.get()  
+
+        commandLine = [
+            npxPath,
+            "cap",
+            "run",
+            "ios",
+            "--target",
+            "4FC9B4B3-6C27-4D7C-B586-826F43326B2B"
+        ]
+
+
+        standardInput = System.in
+    }
+}
+
+ 
+
+task openIOSCapApp(type: NpxTask) {
+    dependsOn capIOSSync
+    dependsOn ':platform-web:buildWebApp'
+    command.set("cap")
+    args.set(["open", "ios"])
+}

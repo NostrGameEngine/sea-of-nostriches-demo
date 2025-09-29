@@ -496,8 +496,6 @@ public class TeaReflectionSupplier implements ReflectionSupplier {
         TeaReflectionSupplier.addReflectionClass("org.ngengine.auth.AuthSelectionWindow");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.auth.AuthStrategy");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.auth.Nip46AuthStrategy");
-        TeaReflectionSupplier.addReflectionClass("org.ngengine.auth.nip07.Nip07Auth");
-        TeaReflectionSupplier.addReflectionClass("org.ngengine.auth.nip07.Nip07AuthWindow");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.auth.nip46.Nip46Auth");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.auth.nip46.Nip46AuthWindow");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.auth.nip46.Nip46ChallengeWindow");
@@ -505,8 +503,6 @@ public class TeaReflectionSupplier implements ReflectionSupplier {
         TeaReflectionSupplier.addReflectionClass("org.ngengine.auth.nsec.NsecAuthWindow");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.auth.stored.StoredAuthSelectionWindow");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.components.Component");
-        TeaReflectionSupplier.addReflectionClass("org.ngengine.components.MultiSpatialComponent");
-        TeaReflectionSupplier.addReflectionClass("org.ngengine.components.SpatialComponent");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.components.StallingComponent");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.components.fragments.AppFragment");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.components.fragments.AssetLoadingFragment");
@@ -517,7 +513,6 @@ public class TeaReflectionSupplier implements ReflectionSupplier {
         TeaReflectionSupplier.addReflectionClass("org.ngengine.components.fragments.LogicFragment");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.components.fragments.MainViewPortFragment");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.components.fragments.RenderFragment");
-        TeaReflectionSupplier.addReflectionClass("org.ngengine.components.jme3.SpatialComponentControl");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.demo.son.BaseEnvironment");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.demo.son.HelloGameState");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.demo.son.LoadingGameState");
