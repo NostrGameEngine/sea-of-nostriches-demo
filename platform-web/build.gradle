@@ -1,0 +1,400 @@
+
+plugins {
+    id "java"
+    id "war"
+    id "org.teavm" version "${teaVmVersion}"
+}
+
+import java.security.MessageDigest
+import java.nio.file.Files
+import java.nio.file.Paths
+apply from: 'class-finder.gradle'
+
+configurations {
+    withResources {
+        canBeResolved = true
+    }
+}
+ 
+ 
+configurations.configureEach {
+    exclude group: 'org.ngengine', module: 'jme3-jbullet'
+}
+
+dependencies {
+    implementation "org.teavm:teavm-jso:${teaVmVersion}"
+    implementation "org.teavm:teavm-jso-apis:${teaVmVersion}"
+    implementation "org.teavm:teavm-metaprogramming-api:${teaVmVersion}"
+    implementation "org.teavm:teavm-classlib:${teaVmVersion}"
+    implementation "org.teavm:teavm-tooling:${teaVmVersion}"
+    implementation "org.teavm:teavm-core:${teaVmVersion}"
+
+    implementation "org.ngengine:nge-platform-teavm:${ngePlatformVersion}"
+    implementation "org.ngengine:nge-app:${ngeVersion}"
+    implementation "org.ngengine:jme3-plugins-json:${ngeVersion}"
+    implementation "org.ngengine:nge-web:${ngeVersion}"
+    implementation "org.ngengine:nge-web-bullet:${ngeVersion}"
+
+
+    implementation project(':app')
+
+
+    withResources  project(':app')
+    withResources  "org.ngengine:nge-platform-teavm:${ngePlatformVersion}"
+    withResources  "org.ngengine:nge-web:${ngeVersion}"
+    withResources  "org.ngengine:nge-web-bullet:${ngeVersion}"
+
+ 
+}
+
+
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+sourceSets {
+    test {
+        resources {
+            srcDirs = ['src/test/resources', 'src/main/resources']            
+        }
+    }
+}
+
+
+
+def binaryExclusions = [
+    '**/*.class',
+    '**/*.dll',
+    '**/*.so',
+    '**/*.dylib',
+    '**/package.html',
+    "**/*.kotlin_builtins",
+    "**/build.data",
+    "**/*.xml",
+    "**/test*.png"
+]
+
+
+task copyAllResources {
+    description = "Copy all resources to the TeaVM output directory"
+    group = "build"
+
+    // Ensure this project and every project dependency have their jars built
+    dependsOn configurations.runtimeClasspath.getTaskDependencyFromProjectDependency(true, 'jar')
+    dependsOn 'jar'
+
+    // Keep existing TeaVM compilation prerequisites if they exist
+    ['compileTeavmJava','processTeavmResources','compileJava','processResources']
+        .each { tn -> if (tasks.findByName(tn) != null) dependsOn tn }
+
+    doFirst {
+        println "Copying ALL runtimeClasspath resources (including transitives) -> $buildDir/generated/teavm/js"
+        delete "$buildDir/generated/teavm/js"
+    }
+
+    doLast {
+        def dest = file("$buildDir/generated/teavm/js")
+        dest.mkdirs()
+
+        def safeCopy = { spec ->
+            copy {
+                into dest
+                from spec
+                exclude(*binaryExclusions)
+                // Also skip obvious non-resource build metadata if desired:
+                exclude '**/module-info.class'
+                includeEmptyDirs = false
+                duplicatesStrategy = DuplicatesStrategy.INCLUDE
+            }
+        }
+
+        // 1. This module's own resources
+        safeCopy('src/main/resources')
+
+        // 2. All resolved runtimeClasspath entries (transitive)
+        //    This includes external jars, project jars, and output dirs.
+        def runtimeFiles = configurations.runtimeClasspath.resolvedConfiguration.lenientConfiguration.files
+        runtimeFiles.each { f ->
+            if (!f.exists()) return
+            if (f.isDirectory()) {
+                safeCopy(f)
+            } else if (f.name.endsWith('.jar')) {
+                safeCopy(project.zipTree(f))
+            }
+        }
+
+        println "Resource aggregation complete. Total files: " +
+            fileTree(dest).matching { exclude(*binaryExclusions) }.files.size()
+    }
+}
+
+
+
+task finalizeResources {
+    dependsOn copyAllResources
+    group = "build"
+ 
+     
+
+    doLast {
+        def manifestFile = file("$buildDir/generated/teavm/js/manifest.json")
+        if (manifestFile.exists()) {
+            def manifest = new groovy.json.JsonSlurper().parseText(manifestFile.text)
+            manifest.name = appFullName
+            manifest.short_name = appName
+
+            manifestFile.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(manifest))
+            println "Updated manifest.json: name=$appFullName, short_name=$appName"
+        }
+      
+
+      
+    }
+}
+
+ 
+
+task generateResourcesIndex {
+    dependsOn finalizeResources
+
+    doLast {
+        def outputDir = file("$buildDir/generated/teavm/js/")
+        def outputFile = file("$buildDir/generated/teavm/js/resources.index.txt")
+
+        outputFile.text = generateHashes(outputDir)
+    }
+}
+
+def generateHashes(File dir) {
+    def hashes = []
+    Files.walk(Paths.get(dir.toURI())).filter { 
+        Files.isRegularFile(it) 
+    }.forEach { file ->
+        def relativePath = dir.toPath().relativize(file).toString()
+        if(relativePath.endsWith(".class")) return;
+        if(relativePath.endsWith(".java")) return;
+        def hash = generateSHA256(file.toFile())
+        def size = file.toFile().length()
+        hashes << "$hash $size $relativePath"
+    }
+    return hashes.join('\n')
+}
+
+def generateSHA256(file) {
+    def messageDigest = MessageDigest.getInstance("SHA-256")
+    file.eachByte(4096) { bytes, len ->
+        messageDigest.update(bytes, 0, len)
+    }
+    return messageDigest.digest().collect { String.format("%02x", it) }.join()
+}
+
+
+task buildWebApp {
+    group = 'web'
+    description = 'Compile, generate JS, copy resources and produce resources index.'
+    dependsOn 'compileJava',  'generateJavaScript', 'copyAllResources', 'generateResourcesIndex'
+ 
+}
+
+task runWebApp(type: Exec) {
+    group = 'web'
+    description = "Runs a simple HTTP server serving $buildDir/generated/teavm/js (port 8000)."
+
+    dependsOn buildWebApp
+
+    workingDir = file("$buildDir/generated/teavm/js")
+
+    commandLine = ['npx', 'http-server', '.', '-p', '8000']
+    standardInput = System.in
+}
+
+task runWebAppNoBuild(type: Exec) {
+    group = 'web'
+    description = "Runs a simple HTTP server serving $buildDir/generated/teavm/js (port 8000)."
+
+
+    workingDir = file("$buildDir/generated/teavm/js")
+
+    commandLine = ['npx', 'http-server', '.', '-p', '8000']
+    standardInput = System.in
+}
+
+
+task scanClasspathForTeaVM {
+    description = "Scans classpath for classes for TeaVM preservation and reflection"
+    group = "build"
+
+    // Ensure jars of all project deps (including transitive) are built
+    dependsOn configurations.runtimeClasspath.getTaskDependencyFromProjectDependency(true, "jar")
+    dependsOn "jar"
+
+    doLast {
+        // Build classpath from resolved artifacts (transitive) in lenient mode
+        def runtimeArtifacts = configurations.runtimeClasspath.incoming.artifactView {
+            lenient true
+        }.artifacts.artifactFiles
+
+        // Optionally merge compile artifacts as a fallback
+        def compileArtifacts = configurations.compileClasspath.incoming.artifactView {
+            lenient true
+        }.artifacts.artifactFiles
+
+        Set<File> classpath = new LinkedHashSet<>()
+        // This project’s compiled classes (dirs)
+        classpath.addAll(sourceSets.main.output.files)
+        // All resolved artifacts (transitive), jars/dirs
+        classpath.addAll(runtimeArtifacts.files)
+        classpath.addAll(compileArtifacts.files)
+
+        // Keep only existing dirs/jars
+        classpath = classpath.findAll { it.exists() && (it.isDirectory() || it.name.endsWith(".jar")) } as Set<File>
+
+        println "Scanning ${classpath.size()} classpath entries"
+
+        def scanResults = project.scanClasspathForClasses(classpath)
+
+        def preserveListFile = file("${buildDir}/generated/teaReflectList.txt")
+        project.generateClassListFile(preserveListFile, scanResults.classes) { className ->
+            "**/${className.replace('.', '/')}.java"
+        }
+
+        def reflectionSupplierFile = file("${buildDir}/generated/teaReflect.java")
+        def template = """private static void initGenerated() {
+{{classInitializers}}
+    }"""
+        project.generateCodeFromTemplate(reflectionSupplierFile, template, [
+            classInitializers: scanResults.reflectionClasses.collect {
+                "        TeaReflectionSupplier.addReflectionClass(\"${it}\");"
+            }.join('\n')
+        ])
+    }
+}
+
+task updateTeaReflectionSupplier {
+    description = "Updates the TeaReflectionSupplier.java file with generated initGenerated method"
+    group = "build"
+    dependsOn scanClasspathForTeaVM
+    
+    doLast {
+        def reflectionSupplierFile = file("${buildDir}/generated/teaReflect.java")
+        def teaReflectionSupplierFile = file("${projectDir}/src/main/java/org/ngengine/platform/TeaReflectionSupplier.java")
+        
+        if (reflectionSupplierFile.exists() && teaReflectionSupplierFile.exists()) {
+            def content = teaReflectionSupplierFile.text
+            def initGeneratedContent = reflectionSupplierFile.text
+            content = content.replaceAll(/(?s)private static void initGenerated\(\)\s*\{.*?\}/, initGeneratedContent)
+            teaReflectionSupplierFile.text = content
+            println "Updated TeaReflectionSupplier.java with generated initGenerated() method"
+        }
+    }
+}
+
+compileTeavmJava.dependsOn updateTeaReflectionSupplier
+
+teavm.js {
+    addedToWebApp = false
+    mainClass = "org.ngengine.platform.WebLauncher"
+    obfuscated = false
+    debugInformation = true
+    strict= false
+    outOfProcess=false
+    // processMemory=6000
+    // fastGlobalAnalysis=false
+    optimization=org.teavm.gradle.api.OptimizationLevel.NONE
+    sourceMap=true
+    
+    moduleType = org.teavm.gradle.api.JSModuleType.ES2015  
+
+    properties = [
+        "teavm.c.vmAssertions": "false"
+    ]
+    
+    def classesToPreserve=[]
+    def preserveListFile = file("${buildDir}/generated/teaReflectList.txt")
+    if (preserveListFile.exists()) {
+        preserveListFile.readLines().each { line ->
+            if (line.trim()) {
+                // println "Preserving class: $line"
+                classesToPreserve.add(line.trim())
+            }
+        }
+    }
+    // preservedClasses.add("**/DefaultTechniqueDefLogic.java")
+    // preservedClasses.add("**/WeakRefCloneAssetCache.java")
+
+  // Collect fully qualified class names to preserve (deduplicated)
+    def fqcnToPreserve = new LinkedHashSet<String>()
+
+    // Helper: turn a filesystem path (ending in .java or .class) into FQCN
+    def toFqcn = { File baseDir, File f ->
+        def rel = f.path.substring(baseDir.path.length() + 1)
+        rel = rel.replaceAll(/\.java$/, '').replaceAll(/\.class$/, '')
+        rel.replace('/', '.')
+    }
+
+    // 1. Iterate all included Gradle projects (your original logic)
+    rootProject.allprojects.each { prj ->
+        if (!prj.hasProperty('sourceSets')) return
+        prj.sourceSets.main.java.srcDirs.each { srcDir ->
+            if (!srcDir.exists()) return
+            fileTree(srcDir).matching { include classesToPreserve }.forEach { f ->
+                def fqcn = toFqcn(srcDir, f)
+                fqcnToPreserve.add(fqcn)
+            }
+        }
+    }
+
+    // 2. Scan ALL runtimeClasspath artifacts (dirs + third-party jars)
+def rtArtifacts = configurations.runtimeClasspath.resolvedConfiguration.lenientConfiguration.files
+rtArtifacts.each { artifact ->
+    if (!artifact.exists()) return
+    if (artifact.isDirectory()) {
+        fileTree(artifact).matching { include classesToPreserve.collect { it.replace('.java', '.class') } }.forEach { f ->
+            def fqcn = toFqcn(artifact, f)
+            fqcnToPreserve.add(fqcn)
+        }
+    } else if (artifact.name.endsWith('.jar')) {
+        // Manual JAR inspection instead of using zipTree()
+        def classFilePatterns = classesToPreserve.collect { it.replace('.java', '.class') }
+            .collect { it.replace('**/', '') } // Remove any ** prefix for direct matching
+        
+        try {
+            def jarFile = new java.util.jar.JarFile(artifact)
+            def entries = jarFile.entries()
+            
+            while (entries.hasMoreElements()) {
+                def entry = entries.nextElement()
+                if (entry.isDirectory()) continue
+                
+                def entryName = entry.getName()
+                // Check if this entry matches any of our patterns
+                if (classFilePatterns.any { pattern -> 
+                    entryName.endsWith(pattern) || entryName.matches(pattern.replace("*", ".*")) 
+                }) {
+                    def fqcn = entryName.replaceAll(/\.class$/, '').replace('/', '.')
+                    fqcnToPreserve.add(fqcn)
+                }
+            }
+            jarFile.close()
+        } catch (Exception e) {
+            println "WARNING: Could not process JAR file: ${artifact.name} - ${e.message}"
+        }
+    }
+}
+    
+
+  
+    //    b) Fully qualified class names (helps when source path matching is insufficient)
+    fqcnToPreserve.each { 
+        // println "Preserving class: $it"
+        preservedClasses.add(it) 
+        }
+
+    // Optional debug
+
+
+    targetFileName = "webapp.js"
+}
