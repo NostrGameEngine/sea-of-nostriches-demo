@@ -92,16 +92,17 @@ public class BaseEnvironment implements Component<Object>, AsyncAssetLoadingFrag
         ViewPort viewPort = vpm.getMainSceneViewPort();
         Node rootNode = vpm.getRootNode(viewPort);
 
-        // music
+        // // music
+        rootNode.attachChild(backgroundMusic);
         backgroundMusic.play();
 
-        // sky
-        rootNode.attachChild(backgroundMusic);
+        // // sky
+        
         rootNode.attachChild(sky);
         EnvironmentProbeControl.tagGlobal(sky);
         rootNode.addControl(new EnvironmentProbeControl(assetManager, 256));
 
-        // light
+        // // light
         DirectionalLight dl = new DirectionalLight();
         dl.setDirection(new Vector3f(-0.3f, -0.1f, -0.9f).normalizeLocal());
         dl.setColor(ColorRGBA.White.mult(2.3f));
@@ -114,7 +115,7 @@ public class BaseEnvironment implements Component<Object>, AsyncAssetLoadingFrag
             // post processing
             FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
             fpp.setFrameBufferDepthFormat(Format.Depth24Stencil8);
-            fpp.setNumSamples(4);
+            // fpp.setNumSamples(4);
             viewPort.addProcessor(fpp);
 
             ToneMapFilter tonemap = new ToneMapFilter(Vector3f.UNIT_XYZ.mult(3f));

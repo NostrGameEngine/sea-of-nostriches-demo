@@ -24,17 +24,19 @@ public class Main {
     
     public static NGEAppRunner main(String arg[]){
         AppSettings settings = new AppSettings(true);
-        settings.setRenderer(AppSettings.LWJGL_OPENGL32);
-        settings.setWidth(1980);
-        settings.setHeight(1080);
+        settings.setVSync(true);
+        settings.setResizable(true);
+        // settings.setRenderer(AppSettings.LWJGL_OPENGL32);
+        settings.setWidth(1024);
+        settings.setHeight(768);
         settings.setGammaCorrection(true);
-        settings.setSamples(4);
+        settings.setSamples(2);
         settings.setStencilBits(8);
         settings.setDepthBits(24);
         settings.setVSync(true);
-        settings.setGraphicsDebug(false);
+        // settings.setGraphicsDebug(false);
         settings.setTitle("Nostr Game Engine Demo");
-        settings.setX11PlatformPreferred(true);
+        // settings.setX11PlatformPreferred(true);
 
         NGEAppRunner appBuilder = NGEApplication.createApp(
             settings,

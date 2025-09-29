@@ -7,7 +7,7 @@ import org.ngengine.runner.Runner;
 import org.ngengine.store.DataStoreProvider;
 
 public class LoadingGameState implements Component<Object>{
-    private Runnable closeWindow;
+    private LoadingWindow win;
     @Override
     public Object getSlot() {
         return "mainState";
@@ -16,12 +16,12 @@ public class LoadingGameState implements Component<Object>{
     @Override
     public void onEnable(ComponentManager mng, Runner runner, DataStoreProvider dataStore, boolean firstTime, Object arg) {
         NWindowManagerComponent windowManager = mng.getComponent(NWindowManagerComponent.class);
-        closeWindow = windowManager.showWindow(LoadingWindow.class, null);
+        win = windowManager.showWindow(LoadingWindow.class, null);
     }
 
     @Override
     public void onDisable(ComponentManager mng, Runner runner, DataStoreProvider dataStore) {
-        closeWindow.run();
+        win.close();
     }
     
 }

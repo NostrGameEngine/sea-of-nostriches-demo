@@ -282,6 +282,7 @@ public class OceanAppState implements Component<Object>, LogicFragment {
                 sxx.depthFirstTraversal(sx -> {
                     if (sx instanceof Geometry) {
                         Geometry geom = (Geometry) sx;
+                        System.out.println("Enable stencil mask for " + geom.getName());
                         log.info("Enable stencil mask for  " + geom.getName());
                         Material mat = geom.getMaterial().clone();
                         mat

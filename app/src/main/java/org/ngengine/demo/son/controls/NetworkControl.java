@@ -207,11 +207,11 @@ public class NetworkControl extends AbstractControl {
     }
 
     public void applyPacket(Message m) {
-        log.info("Received message: " + m);
+        // log.info("Received message: " + m);
         if (m instanceof TransformPacket) {
             TransformPacket packet = (TransformPacket) m;
             if (packet.getTimestamp().isBefore(lastReceivedTransformPacket)) {
-                log.finer("Received old packet");
+                // log.finer("Received old packet");
                 return;
             }
             Spatial boat = getSpatial();
@@ -229,7 +229,7 @@ public class NetworkControl extends AbstractControl {
         } else if (m instanceof AnimPacket) {
             AnimPacket animPacket = (AnimPacket) m;
             if (animPacket.getTimestamp().isBefore(lastReceivedTransformPacket)) {
-                log.finer("Received old packet");
+                // log.finer("Received old packet");
                 return;
             }
             Spatial boat = getSpatial();

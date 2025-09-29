@@ -41,9 +41,8 @@ import org.ngengine.nostr4j.keypair.NostrPrivateKey;
 import org.ngengine.nostr4j.nip46.Nip46AppMetadata;
 import org.ngengine.nostr4j.signer.NostrKeyPairSigner;
 import org.ngengine.nostr4j.signer.NostrSigner;
-import org.ngengine.platform.NGEPlatform;
-import org.ngengine.platform.VStore;
 import org.ngengine.player.PlayerManagerComponent;
+import org.ngengine.store.DataStore;
 
 import com.jme3.system.AppSettings;
 
@@ -51,32 +50,35 @@ public class Settings {
 
     public static final String GAME_NAME = "soo";
     public static final int GAME_VERSION = 100;
-    public static final List<String> GAME_RELAYS = List.of("wss://relay.ngengine.org" );
-    public static final String TURN_SERVER = "wss://relay.ngengine.org";
+    public static final List<String> GAME_RELAYS = List.of("wss://relay.ngengine.org", "wss://relay2.ngengine.org" );
+    public static final String TURN_SERVER = "wss://relay2.ngengine.org";
     public static final NostrSigner SIGNER = new NostrKeyPairSigner(new NostrKeyPair(NostrPrivateKey.generate()));
 
 
-    public static final List<String> AUTH_RELAYS = List.of("wss://relay.nsec.app", "wss://relay.ngengine.org");
+    public static final List<String> AUTH_RELAYS = List.of("wss://relay.nsec.app", "wss://relay.ngengine.org",
+            "wss://relay2.ngengine.org");
     public static final List<String> ID_RELAYS = List.of(
-        "wss://relay.ngengine.org",
-        "wss://relay.snort.social",
-        "wss://relay.damus.io",
-        "wss://relay.primal.net"
+            // "wss://relay.ngengine.org",
+            "wss://relay2.ngengine.org"
+        //                 "wss://relay.snort.social",
+        // "wss://relay.damus.io",
+        // "wss://relay.primal.net"
     );
     public static final Nip46AppMetadata NIP46_METADATA = new Nip46AppMetadata().setName("ngengine.org - Unnamed App");
 
-    public static final AuthStrategy authStrategy(AppSettings settings, Consumer<NostrSigner> callback) {
-        return authStrategy(settings, callback, null);
+    public static final AuthStrategy authStrategy(AppSettings settings, DataStore dataStore, Consumer<NostrSigner> callback) {
+        return authStrategy(settings, callback, null, dataStore);
     }
 
     public static final AuthStrategy authStrategy(
         AppSettings settings,
         Consumer<NostrSigner> callback,
-        PlayerManagerComponent playerManager
+        PlayerManagerComponent playerManager,
+        DataStore dataStore
     ) {
-        VStore authStore = NGEPlatform.get().getDataStore(settings.getTitle(), "auth");
         return new AuthStrategy(callback)
-            .enableStore(authStore)
+            .enableStore(
+                        dataStore)
             .enableNip46RemoteIdentity(new Nip46AuthStrategy().setMetadata(NIP46_METADATA))
             .enableLocalIdentity()
             .setPlayerManager(playerManager);

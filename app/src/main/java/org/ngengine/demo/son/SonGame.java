@@ -52,6 +52,7 @@ public class SonGame {
         settings.setDepthBits(24);
         settings.setVSync(true);
         settings.setGraphicsDebug(false);
+        settings.setFullscreen(true);
         settings.setTitle("Nostr Game Engine Demo");
 
         Runnable appBuilder = NGEApplication.createApp(

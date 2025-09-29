@@ -232,6 +232,6 @@ vec4 sampleIBOcean(
         height += bandHeight * scale.y * baseScale.y ;
         wNormal += bandNormal ;
     }
-    return vec4(normalize(wNormal), height/NUM_LAYERS);
+    return vec4(normalize(wNormal), height/float(NUM_LAYERS));
 }
 #endif

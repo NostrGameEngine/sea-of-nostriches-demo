@@ -4,10 +4,10 @@ plugins {
 
 android {
     compileSdk 36
-    namespace "${project.applicationId}"  
+    namespace "${project.appId}"  
 
     defaultConfig {
-        applicationId "${project.applicationId}"
+        applicationId "${project.appId}"
         minSdk 33
         targetSdk 33
         versionCode  project.versionCode.toInteger()

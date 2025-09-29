@@ -216,7 +216,7 @@ public class BuoyancyControl extends AbstractControl implements PhysicsTickListe
                 splashParticles.setGravity(0, 12.81f, 0);
                 // rp.setHorizontal(true);
 
-                // splashParticles.emitParticles(22);
+                splashParticles.emitParticles(22);
             }
         }
     }

@@ -70,7 +70,7 @@ public class LobbyGameState implements Component<NostrSigner>, MainViewPortFragm
         NostrSigner signer
     ) {
         mng =
-            new LobbyManager(signer, Settings.GAME_NAME, Settings.GAME_VERSION, Settings.GAME_RELAYS, Settings.TURN_SERVER, runner);
+            new LobbyManager(signer, Settings.GAME_NAME, Settings.GAME_VERSION, runner);
 
         NWindowManagerComponent windowManager = componentMng.getComponent(NWindowManagerComponent.class);
         windowManager.showWindow(

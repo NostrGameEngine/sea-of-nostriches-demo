@@ -19,6 +19,11 @@
             "osx": {
                 "vmArgs": "-XstartOnFirstThread"
             },
+            "linux": {
+                "env": {
+                    "__GL_THREADED_OPTIMIZATIONS": "0"
+                }
+            },
             "vmArgs": "-Djava.util.logging.config.file=${workspaceFolder}/dev-logging.properties"
         }
     ]

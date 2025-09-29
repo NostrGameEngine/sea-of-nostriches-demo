@@ -48,30 +48,33 @@ import com.simsilica.lemur.component.SpringGridLayout;
 import com.simsilica.lemur.core.GuiComponent;
 import com.simsilica.lemur.event.MouseListener;
 import com.simsilica.lemur.style.StyleAttribute;
-import java.time.Duration;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import org.ngengine.gui.components.NIconButton;
 import org.ngengine.gui.components.NTextInput;
 import org.ngengine.gui.components.NVSpacer;
 import org.ngengine.gui.components.containers.NMultiPageList;
+import org.ngengine.gui.components.containers.NMultiPageList.LoadedItems;
 import org.ngengine.gui.win.NWindow;
 import org.ngengine.network.Lobby;
+import org.ngengine.network.LobbyCursor;
 import org.ngengine.network.LobbyManager;
 import org.ngengine.network.P2PChannel;
+import org.ngengine.platform.AsyncTask;
+import org.ngengine.platform.NGEPlatform;
 import org.ngengine.platform.NGEUtils;
 
 public class LobbyManagerWindow extends NWindow<LobbyManagerWindowArg> {
 
-    private static final Logger logger = Logger.getLogger(LobbyManagerWindow.class.getName());
+    static final Logger logger = Logger.getLogger(LobbyManagerWindow.class.getName());
 
     private Lobby selectedLobby;
     private Container selectedLobbyEntry;
     private GuiComponent selectedLobbyEntryBackground;
     private GuiComponent selectionBackground;
+    private LobbyCursor cursor;
 
     @StyleAttribute(value = "selectionBackground")
     public void setSelectionBackground(GuiComponent selectionBackground) {
@@ -90,10 +93,20 @@ public class LobbyManagerWindow extends NWindow<LobbyManagerWindowArg> {
 
         NMultiPageList<Lobby> mlist = new NMultiPageList<>();
         mlist.setRenderer(lobby -> {
+            Container lobbyEntry = new Container(new SpringGridLayout(Axis.X, Axis.Y, FillMode.Last, FillMode.None));
+
+            if(lobby==null) {
+                Label lbl = new Label("-");
+                lbl.setTextHAlignment(HAlignment.Center);
+                lbl.setTextVAlignment(VAlignment.Center);
+                lbl.setCullHint(CullHint.Always);
+                lobbyEntry.addChild(lbl);
+                return lobbyEntry;
+            }
+
             String name = lobby.getDataOrDefault("name", "unnamed");
             int nPeers = NGEUtils.safeInt(lobby.getDataOrDefault("numPeers", "0"));
 
-            Container lobbyEntry = new Container(new SpringGridLayout(Axis.X, Axis.Y, FillMode.Last, FillMode.None));
 
             if (lobby.isLocked()) {
                 NIconButton lockIcon = new NIconButton("icons/outline/lock.svg");
@@ -142,19 +155,21 @@ public class LobbyManagerWindow extends NWindow<LobbyManagerWindowArg> {
             return lobbyEntry;
         });
 
-        Consumer<List<Lobby>> updateList = lobbies -> {
-            mlist.clear();
-
-            for (Lobby lobby : lobbies) {
-                try {
-                    mlist.addItem(lobby);
-                } catch (Exception e) {
-                    logger.warning("Error parsing lobby data: " + e.getMessage());
-                }
-            }
-        };
+         
 
         content.addChild(mlist, BorderLayout.Position.Center);
+
+        Container searchBar = new Container(new SpringGridLayout(Axis.X, Axis.Y, FillMode.First, FillMode.None));
+        content.addChild(searchBar, BorderLayout.Position.North);
+        NTextInput search = new NTextInput();
+        {
+            search.setCopyAction(null);
+            search.setPasteAction(null);
+            search.setTextVAlignment(VAlignment.Center);
+            searchBar.addChild(search);
+        }
+
+
 
         Container pageNavigator = new Container(new SpringGridLayout(Axis.X, Axis.Y, FillMode.Even, FillMode.None));
         pageNavigator.setInsetsComponent(new DynamicInsetsComponent(1f, 0, 0, 0));
@@ -177,7 +192,7 @@ public class LobbyManagerWindow extends NWindow<LobbyManagerWindowArg> {
             pageNavigator.addChild(next);
             content.addChild(pageNavigator, BorderLayout.Position.South);
 
-            mlist.setPageChangeListener((p, max) -> {
+            mlist.setPageChangeListener((p) -> {
                 if (!mlist.hasPreviousPage()) {
                     prev.setEnabled(false);
                 } else {
@@ -189,36 +204,42 @@ public class LobbyManagerWindow extends NWindow<LobbyManagerWindowArg> {
                 } else {
                     next.setEnabled(true);
                 }
-                pageLabel.setText(p + 1 + "/" + max);
+                pageLabel.setText(""+(p + 1));
+            });
+
+            mlist.setPageLoadingHandler((num,res)->{
+                String text = search.getText();
+                int n = Math.min(num,2);
+                // TODO tags
+                mng.listLobbies(
+                        text,
+                        n,
+                        null,
+                        cursor,
+                        (lobbies, err) -> {
+                            if(err!=null){
+                                getManager().showToast(err);
+                                res.accept(null);
+                                return;
+                            }
+                            this.cursor = lobbies;
+                            LoadedItems<Lobby> loaded = new LoadedItems<>(lobbies.get(), lobbies.hasMore());
+                            res.accept(loaded);
+                        });
+            
             });
         }
 
-        // Container listCnt = new Container(new SpringGridLayout(Axis.Y, Axis.X, FillMode.None,
-        // FillMode.Even));
+  
 
-        // content.addChild(listCnt, BorderLayout.Position.Center);
 
-        Container searchBar = new Container(new SpringGridLayout(Axis.X, Axis.Y, FillMode.First, FillMode.None));
-        content.addChild(searchBar, BorderLayout.Position.North);
-
-        NTextInput search = new NTextInput();
         {
-            search.setCopyAction(null);
-            search.setPasteAction(null);
+           
             search.setTextChangeAction(src -> {
-                String text = search.getText();
-                // TODO tags
-                mng.listLobbies(
-                    text,
-                    100,
-                    null,
-                    (lobbies, err) -> {
-                        updateList.accept(lobbies);
-                    }
-                );
+                this.cursor = null;
+                mlist.clear();
             });
-            search.setTextVAlignment(VAlignment.Center);
-            searchBar.addChild(search);
+
         }
 
         NIconButton searchBtn = new NIconButton("icons/outline/search.svg");
@@ -262,15 +283,8 @@ public class LobbyManagerWindow extends NWindow<LobbyManagerWindowArg> {
             Button refresh = new Button("Refresh list");
             refresh.setTextHAlignment(HAlignment.Center);
             refresh.addClickCommands(src -> {
-                mng.listLobbies(
-                    search.getText(),
-                    100,
-                    null,
-                    (lobbies, err) -> {
-                        if (err != null) return;
-                        updateList.accept(lobbies);
-                    }
-                );
+                this.cursor = null;
+                mlist.clear();
             });
             buttonPanel.addChild(refresh);
         }
@@ -278,111 +292,6 @@ public class LobbyManagerWindow extends NWindow<LobbyManagerWindowArg> {
         buttonPanel.addChild(new NVSpacer());
         buttonPanel.addChild(pageNavigator);
 
-        mng.listLobbies(
-            "",
-            100,
-            null,
-            (lobbies, err) -> {
-                if (err != null) return;
-                updateList.accept(lobbies);
-            }
-        );
-    }
-
-    public static class NewMatchWindow extends NWindow<LobbyManager> {
-
-        @Override
-        protected void compose(Vector3f size, LobbyManager mng) {
-            setTitle("New match");
-
-            Container content = getContent().addCol();
-
-            NTextInput lobbyName = new NTextInput();
-            lobbyName.setLabel("Name");
-            lobbyName.setCopyAction(null);
-            lobbyName.setPasteAction(null);
-            content.addChild(lobbyName);
-
-            NTextInput password = new NTextInput();
-            password.setLabel("Password");
-            password.setIsSecretInput(true);
-            content.addChild(password);
-
-            content.addChild(new NVSpacer());
-            Button create = new Button("Create");
-            create.setTextHAlignment(HAlignment.Center);
-            content.addChild(create);
-            create.addClickCommands(src -> {
-                logger.info("Creating lobby: " + lobbyName.getText());
-                Map<String, String> data = new HashMap<>();
-                data.put("name", lobbyName.getText());
-                Duration expiration = Duration.ofDays(1);
-                mng.createLobby(
-                    password.getText(),
-                    data,
-                    expiration,
-                    (r, err) -> {
-                        if (err != null) {
-                            getManager().showToast(err);
-                            return;
-                        }
-                        logger.info("Lobby created: " + r.getId());
-                        close();
-                    }
-                );
-            });
-        }
-    }
-
-    static class JoinLockedMatchArg {
-
-        public LobbyManager mng;
-        public Lobby lobby;
-        public Consumer<P2PChannel> onJoin;
-
-        JoinLockedMatchArg(LobbyManager mng, Lobby lobby, Consumer<P2PChannel> onJoin) {
-            this.mng = mng;
-            this.lobby = lobby;
-            this.onJoin = onJoin;
-        }
-    }
-
-    public static class JoinLockedLobby extends NWindow<JoinLockedMatchArg> {
-
-        @Override
-        protected void compose(Vector3f size, JoinLockedMatchArg arg) {
-            LobbyManager appState = arg.mng;
-            Lobby lobby = arg.lobby;
-
-            setTitle("Join locked match");
-
-            Container content = getContent().addCol();
-
-            NTextInput password = new NTextInput();
-            password.setLabel("Password");
-            password.setIsSecretInput(true);
-            content.addChild(password);
-
-            content.addChild(new NVSpacer());
-            Button create = new Button("Join");
-            create.setTextHAlignment(HAlignment.Center);
-            content.addChild(create);
-            create.addClickCommands(src -> {
-                try {
-                    P2PChannel chan = appState.connectToLobby(lobby, password.getText());
-                    arg.onJoin.accept(chan);
-                    close();
-                } catch (Exception e) {
-                    getManager().showToast(e);
-                }
-            });
-
-            Button cancel = new Button("Cancel");
-            cancel.setTextHAlignment(HAlignment.Center);
-            content.addChild(cancel);
-            cancel.addClickCommands(src -> {
-                close();
-            });
-        }
+         
     }
 }

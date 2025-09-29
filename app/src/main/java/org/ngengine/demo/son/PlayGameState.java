@@ -124,26 +124,20 @@ public class PlayGameState
         if (hud != null) {
             hud.close();
         }
-        mng.showWindow(
-            NHud.class,
-            (win, err) -> {
-                if (err != null) {
-                    log.log(Level.SEVERE, "Error loading HUD", err);
-                    return;
-                }
-                hud = win;
-                hudSpeed = new NLabel("Speed: 0 km/h");
-                hudSpeed.setTextVAlignment(VAlignment.Top);
-                hudSpeed.setTextHAlignment(HAlignment.Right);
-                hud.getTopRight().addChild(hudSpeed);
-
-                NLabel instructions = new NLabel(
-                    "Use W/S to accelerate/decelerate, A/D to steer and the mouse to look around.\n"
-                        + "Press ESC to quit the game."
-                );
-                hud.getTopLeft().addChild(instructions);
-            }
+        hud = mng.showWindow(
+            NHud.class
         );
+        hudSpeed = new NLabel("Speed: 0 km/h");
+        hudSpeed.setTextVAlignment(VAlignment.Top);
+        hudSpeed.setTextHAlignment(HAlignment.Right);
+        hud.getTopRight().addChild(hudSpeed);
+
+        NLabel instructions = new NLabel(
+            "Use W/S to accelerate/decelerate, A/D to steer and the mouse to look around.\n"
+                + "Press ESC to quit the game."
+        );
+        hud.getTopLeft().addChild(instructions);
+            
     }
 
     @Override

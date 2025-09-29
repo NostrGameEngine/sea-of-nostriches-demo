@@ -82,7 +82,8 @@ public class HelloGameState implements Component<Object>, AppFragment, MainViewP
             signer -> {
                 fragmentManager.enableComponent(LobbyGameState.class, signer);
             },
-            playerManager
+            playerManager,
+            dataStoreProvider.getDataStore("auth")
         );
 
         // open auth window
