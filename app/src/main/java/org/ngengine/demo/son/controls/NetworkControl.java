@@ -56,8 +56,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.ngengine.demo.son.packets.AnimPacket;
-import org.ngengine.demo.son.packets.TransformPacket;
+import org.ngengine.demo.son.packets.AnimMessage;
+import org.ngengine.demo.son.packets.TransformMessage;
 import org.ngengine.network.RemotePeer;
 
 public class NetworkControl extends AbstractControl {
@@ -140,8 +140,8 @@ public class NetworkControl extends AbstractControl {
 
     public void sendUpdatePackets(Set<Map.Entry<HostedConnection, Spatial>> peers) {
         Transform localTransform = getSpatial().getWorldTransform();
-        TransformPacket positionPacket = null;
-        AnimPacket animPacket = null;
+        TransformMessage positionPacket = null;
+        AnimMessage animPacket = null;
 
         long now = Instant.now().toEpochMilli();
 
@@ -176,7 +176,7 @@ public class NetworkControl extends AbstractControl {
                 if (now - lastSentPosition >= expectedRate) {
                     p.getKey().setAttribute("lspp", now);
                     if (positionPacket == null) {
-                        positionPacket = new TransformPacket();
+                        positionPacket = new TransformMessage();
                         positionPacket.setTransform(localTransform);
                     }
 
@@ -193,7 +193,7 @@ public class NetworkControl extends AbstractControl {
                             float flagFactor = animControl.getFlagFactor();
                             float sailFactor = animControl.getSailFactor();
                             float windFactor = animControl.getWindFactor();
-                            animPacket = new AnimPacket(flagFactor, sailFactor, windFactor);
+                            animPacket = new AnimMessage(flagFactor, sailFactor, windFactor);
                         }
                     }
                     if (animPacket != null) {
@@ -208,8 +208,8 @@ public class NetworkControl extends AbstractControl {
 
     public void applyPacket(Message m) {
         // log.info("Received message: " + m);
-        if (m instanceof TransformPacket) {
-            TransformPacket packet = (TransformPacket) m;
+        if (m instanceof TransformMessage) {
+            TransformMessage packet = (TransformMessage) m;
             if (packet.getTimestamp().isBefore(lastReceivedTransformPacket)) {
                 // log.finer("Received old packet");
                 return;
@@ -226,8 +226,8 @@ public class NetworkControl extends AbstractControl {
             localRotation.set(packet.getTransform().getRotation());
             localRotation.multLocal(parentRotation);
             boat.setLocalRotation(localRotation);
-        } else if (m instanceof AnimPacket) {
-            AnimPacket animPacket = (AnimPacket) m;
+        } else if (m instanceof AnimMessage) {
+            AnimMessage animPacket = (AnimMessage) m;
             if (animPacket.getTimestamp().isBefore(lastReceivedTransformPacket)) {
                 // log.finer("Received old packet");
                 return;

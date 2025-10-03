@@ -347,9 +347,7 @@ public class PlayGameState
                 }
                 log.info("Spawned " + (isRemote ? "remote" : "local") + " boat: " + playerSpatial.getName());
 
-                physics.getPhysics().getPhysicsSpace().add(playerSpatial);
-                ocean.add(playerSpatial);
-                rootNode.attachChild(playerSpatial);
+             
                 if (!isRemote) {
                     Camera cam = viewPort.getCamera();
                     inputManager.addMapping("Forward", new KeyTrigger(KeyInput.KEY_W));
@@ -376,6 +374,10 @@ public class PlayGameState
                 } else {
                     remoteBoats.put(conn, playerSpatial);
                 }
+
+                physics.getPhysics().getPhysicsSpace().add(playerSpatial);
+                ocean.add(playerSpatial);
+                rootNode.attachChild(playerSpatial);
             }
         );
     }

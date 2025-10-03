@@ -45,7 +45,16 @@ task capIOS(type: NpxTask) {
     ignoreExitValue = true 
 }
 
-task capIOSSync(type: NpxTask) {
+task capAndroid(type: NpxTask) {
+    dependsOn capConf
+    dependsOn npmCi
+    dependsOn nodeSetup
+    command.set("cap")
+    args.set(["add", "android"])
+    ignoreExitValue = true 
+}
+
+task refreshCapApp(type: NpxTask) {
     dependsOn capIOS
     dependsOn ':platform-web:buildWebApp'
     command.set("cap")
@@ -53,32 +62,16 @@ task capIOSSync(type: NpxTask) {
 }
 
 
-task runIOSCapApp(type: Exec) {
-    dependsOn capIOSSync
-
-    doFirst {
-        def nodeExt = project.extensions.getByType(NodeExtension)
-        def npxPath = nodeExt.npxCommand.get()  
-
-        commandLine = [
-            npxPath,
-            "cap",
-            "run",
-            "ios",
-            "--target",
-            "4FC9B4B3-6C27-4D7C-B586-826F43326B2B"
-        ]
-
-
-        standardInput = System.in
-    }
-}
-
- 
-
 task openIOSCapApp(type: NpxTask) {
-    dependsOn capIOSSync
+    dependsOn refreshCapApp
     dependsOn ':platform-web:buildWebApp'
     command.set("cap")
     args.set(["open", "ios"])
+}
+
+task openAndroidCapApp(type: NpxTask) {
+    dependsOn refreshCapApp
+    dependsOn ':platform-web:buildWebApp'
+    command.set("cap")
+    args.set(["open", "android"])
 }

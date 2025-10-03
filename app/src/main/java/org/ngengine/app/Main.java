@@ -2,7 +2,6 @@ package org.ngengine.app;
 
 import org.ngengine.NGEApplication;
 import org.ngengine.NGEApplication.NGEAppRunner;
-import org.ngengine.ads.ImmersiveAdComponent;
 import org.ngengine.components.ComponentManager;
  
 import org.ngengine.demo.son.BaseEnvironment;
@@ -13,7 +12,6 @@ import org.ngengine.demo.son.PhysicsManager;
 import org.ngengine.demo.son.PlayGameState;
 import org.ngengine.demo.son.ocean.OceanAppState;
 import org.ngengine.gui.win.NWindowManagerComponent;
-import org.ngengine.nostr4j.keypair.NostrPublicKey;
 import org.ngengine.player.PlayerManagerComponent;
 
 import com.jme3.system.AppSettings;
@@ -37,7 +35,7 @@ public class Main {
         // settings.setGraphicsDebug(false);
         settings.setTitle("Nostr Game Engine Demo");
         // settings.setX11PlatformPreferred(true);
-
+        settings.setFullscreen(true);
         NGEAppRunner appBuilder = NGEApplication.createApp(
             settings,
             app -> {

@@ -31,26 +31,28 @@
  */
 package org.ngengine.demo.son.packets;
 
-import com.jme3.math.Vector3f;
 import com.jme3.network.Message;
 import java.time.Instant;
 import org.ngengine.network.protocol.NetworkSafe;
 
 @NetworkSafe
-public class ShotPacket implements Message {
+public class AnimMessage implements Message {
 
-    private Vector3f from = new Vector3f();
-    private Vector3f to = new Vector3f();
-    private transient boolean reliable = true;
+    private boolean reliable = true;
+
+    private float flagFactor;
+    private float sailFactor;
+    private float windFactor;
     private Instant timestamp;
 
-    public ShotPacket() {
+    public AnimMessage() {
         this.timestamp = Instant.now();
     }
 
-    public ShotPacket(Vector3f from, Vector3f to) {
-        this.from.set(from);
-        this.to.set(to);
+    public AnimMessage(float flagFactor, float sailFactor, float windFactor) {
+        this.flagFactor = flagFactor;
+        this.sailFactor = sailFactor;
+        this.windFactor = windFactor;
         this.timestamp = Instant.now();
     }
 
@@ -58,20 +60,28 @@ public class ShotPacket implements Message {
         return timestamp;
     }
 
-    public void setFrom(Vector3f from) {
-        this.from.set(from);
+    public float getFlagFactor() {
+        return flagFactor;
     }
 
-    public void setTo(Vector3f to) {
-        this.to.set(to);
+    public void setFlagFactor(float flagFactor) {
+        this.flagFactor = flagFactor;
     }
 
-    public Vector3f getFrom() {
-        return from;
+    public float getSailFactor() {
+        return sailFactor;
     }
 
-    public Vector3f getTo() {
-        return to;
+    public void setSailFactor(float sailFactor) {
+        this.sailFactor = sailFactor;
+    }
+
+    public float getWindFactor() {
+        return windFactor;
+    }
+
+    public void setWindFactor(float windFactor) {
+        this.windFactor = windFactor;
     }
 
     @Override

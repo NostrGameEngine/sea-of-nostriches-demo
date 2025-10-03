@@ -101,5 +101,10 @@ if(withDesktopPlatform) {
 //     include('platform-android')
 // }
 
-include('platform-web')
-include('platform-ios-capacitor')
+// if(withWebPlatform || withIOSCapacitorPlatform){
+    include('platform-web')
+// }
+
+// if(withIOSCapacitorPlatform){
+    include('platform-capacitor')
+// }

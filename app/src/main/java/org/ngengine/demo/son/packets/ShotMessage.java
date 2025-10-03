@@ -31,24 +31,26 @@
  */
 package org.ngengine.demo.son.packets;
 
-import com.jme3.math.Transform;
+import com.jme3.math.Vector3f;
 import com.jme3.network.Message;
 import java.time.Instant;
 import org.ngengine.network.protocol.NetworkSafe;
 
 @NetworkSafe
-public class TransformPacket implements Message {
+public class ShotMessage implements Message {
 
-    private Transform transform = new Transform();
+    private Vector3f from = new Vector3f();
+    private Vector3f to = new Vector3f();
     private transient boolean reliable = true;
     private Instant timestamp;
 
-    public TransformPacket() {
+    public ShotMessage() {
         this.timestamp = Instant.now();
     }
 
-    public TransformPacket(Transform transform) {
-        this.transform.set(transform);
+    public ShotMessage(Vector3f from, Vector3f to) {
+        this.from.set(from);
+        this.to.set(to);
         this.timestamp = Instant.now();
     }
 
@@ -56,12 +58,20 @@ public class TransformPacket implements Message {
         return timestamp;
     }
 
-    public void setTransform(Transform transform) {
-        this.transform.set(transform);
+    public void setFrom(Vector3f from) {
+        this.from.set(from);
     }
 
-    public Transform getTransform() {
-        return transform;
+    public void setTo(Vector3f to) {
+        this.to.set(to);
+    }
+
+    public Vector3f getFrom() {
+        return from;
+    }
+
+    public Vector3f getTo() {
+        return to;
     }
 
     @Override

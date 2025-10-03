@@ -11,3 +11,4 @@ node_modules/
 *.map
 .sourcemaps
 .settings
+platform-web/.env.nostr-deploy.local

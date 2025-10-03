@@ -1,5 +1,9 @@
 
+// import com.github.gradle.node.NodeExtension
+// import com.github.gradle.node.npm.task.NpxTask
+// 
 plugins {
+    id 'com.github.node-gradle.node' version '7.1.0'
     id "java"
     id "war"
     id "org.teavm" version "${teaVmVersion}"
@@ -74,7 +78,8 @@ def binaryExclusions = [
     "**/*.kotlin_builtins",
     "**/build.data",
     "**/*.xml",
-    "**/test*.png"
+    "**/test*.png",
+    // '**/*.java'
 ]
 
 
@@ -387,14 +392,168 @@ rtArtifacts.each { artifact ->
     
 
   
-    //    b) Fully qualified class names (helps when source path matching is insufficient)
     fqcnToPreserve.each { 
-        // println "Preserving class: $it"
         preservedClasses.add(it) 
-        }
+     }
 
-    // Optional debug
 
 
     targetFileName = "webapp.js"
 }
+
+task buildBundledWebApp {
+    group = 'web'
+    description = 'Creates a bundled web app with config file and excludes specified files'
+    dependsOn buildWebApp
+    
+    doLast {
+        // Define directories and files
+        def jsDir = file("$buildDir/generated/teavm/js")
+        def bundledJsDir = file("$buildDir/generated/teavm/bundledjs")
+        def bundleIgnoreFile = file("$jsDir/bundle-ignore.txt")
+        def zipFile = file("$bundledJsDir/ngeapp-bundle.zip")
+        def configFile = file("$bundledJsDir/ngeapp-config.json")
+        
+        // Create output directory
+        bundledJsDir.mkdirs()
+        
+        // Read ignore patterns from bundle-ignore.txt
+        def ignorePatterns = []
+        if (bundleIgnoreFile.exists()) {
+            bundleIgnoreFile.eachLine { line -> 
+                if (line.trim() && !line.startsWith('//')) ignorePatterns.add(line.trim()) 
+            }
+            println "Found ${ignorePatterns.size()} patterns to exclude from bundle"
+        } else {
+            println "Warning: bundle-ignore.txt not found at ${bundleIgnoreFile}. No files will be excluded from the bundle."
+        }
+
+        
+        // Create zip with everything except ignored files
+        ant.zip(destfile: zipFile) {
+            fileset(dir: jsDir) {
+                ignorePatterns.each { pattern ->
+                    // Handle directory patterns correctly
+                    if (pattern.endsWith('/')) {
+                        exclude(name: "${pattern}**")
+                    } else {
+                        exclude(name: pattern)
+                    }
+                }
+            }
+        }
+
+
+        // Copy ignored files to bundledjs directory
+        if (!ignorePatterns.isEmpty()) {
+            println "Copying excluded files to bundled directory..."
+            
+            // First, clear the destination directory to avoid leftover files
+            delete fileTree(bundledJsDir).matching { include '**/*' exclude 'ngeapp-bundle.zip', 'ngeapp-config.json' }
+            
+            // Get all files from the source directory
+            fileTree(jsDir).visit { fileDetails ->
+                if (fileDetails.isDirectory()) return
+                
+                // Get the relative path from jsDir
+                def relativePath = fileDetails.relativePath.toString()
+                def matchesPattern = false
+                
+                // Check if this file matches any of our ignore patterns
+                for (pattern in ignorePatterns) {
+                    if (pattern.endsWith('/')) {
+                        // Directory pattern - check if file is within this directory
+                        if (relativePath.startsWith(pattern) || relativePath.startsWith(pattern.substring(0, pattern.length() - 1))) {
+                            matchesPattern = true
+                            break
+                        }
+                    } else {
+                        // File pattern - check for exact match
+                        if (relativePath == pattern) {
+                            matchesPattern = true
+                            break
+                        }
+                    }
+                }
+                
+                // Copy the file if it matches an ignore pattern
+                if (matchesPattern) {
+                    println "Copying excluded file: $relativePath"
+                    copy {
+                        from fileDetails.file
+                        into new File(bundledJsDir, fileDetails.relativePath.parent.toString())
+                    }
+                }
+            }
+            println "Finished copying excluded files"
+        }
+        // Calculate hash of zip file
+        def hash = generateSHA256(zipFile)
+        
+        // Read or create config JSON
+        def config = [:]
+        if (configFile.exists()) {
+            try {
+                // Parse existing config and preserve properties
+                config = new groovy.json.JsonSlurper().parseText(configFile.text)
+                println "Updating existing config file: $configFile.path"
+            } catch (Exception e) {
+                println "Warning: Could not parse existing config file: $e.message"
+                // Start fresh if parsing fails
+                config = [:]
+            }
+        }
+        
+        // Update only the bundle and hash properties
+        config.bundle = "ngeapp-bundle.zip"
+        config.bundleHash = hash
+        
+        // Write config file
+        configFile.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(config))
+        
+        println "Created bundle: $zipFile.path"
+        println "Bundle hash: $hash"
+        println "Config written to: $configFile.path"
+    }
+}
+
+task runBundledWebAppNoBuild(type: Exec) {
+    group = 'web'
+    description = "Runs a simple HTTP server serving $buildDir/generated/teavm/js (port 8000)."
+
+
+    workingDir = file("$buildDir/generated/teavm/bundledjs")
+
+    commandLine = ['npx', 'http-server', '.', '-p', '8000']
+    standardInput = System.in
+}
+
+task runBudledWebApp(type: Exec) {
+    group = 'web'
+    description = "Runs a simple HTTP server serving $buildDir/generated/teavm/js (port 8000)."
+
+    dependsOn buildBundledWebApp
+
+    workingDir = file("$buildDir/generated/teavm/js")
+
+    commandLine = ['npx', 'http-server', '.', '-p', '8000']
+    standardInput = System.in
+}
+
+
+task npmCi(type: Exec) {
+    commandLine = ['npm', 'ci']
+    standardInput = System.in
+    workingDir = file("${projectDir}")
+}
+
+ task deployWebAppPreview(type: Exec) {
+    dependsOn buildBundledWebApp
+    dependsOn npmCi
+    commandLine = ['npx', 'nostr-deploy-cli','deploy','--skip-setup', '-d', "${buildDir}/generated/teavm/bundledjs"]
+    standardInput = System.in
+    workingDir = file("${projectDir}")
+}
+
+ 
+ 

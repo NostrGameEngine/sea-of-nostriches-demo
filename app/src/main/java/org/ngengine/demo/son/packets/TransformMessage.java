@@ -31,28 +31,24 @@
  */
 package org.ngengine.demo.son.packets;
 
+import com.jme3.math.Transform;
 import com.jme3.network.Message;
 import java.time.Instant;
 import org.ngengine.network.protocol.NetworkSafe;
 
 @NetworkSafe
-public class AnimPacket implements Message {
+public class TransformMessage implements Message {
 
-    private boolean reliable = true;
-
-    private float flagFactor;
-    private float sailFactor;
-    private float windFactor;
+    private Transform transform = new Transform();
+    private transient boolean reliable = true;
     private Instant timestamp;
 
-    public AnimPacket() {
+    public TransformMessage() {
         this.timestamp = Instant.now();
     }
 
-    public AnimPacket(float flagFactor, float sailFactor, float windFactor) {
-        this.flagFactor = flagFactor;
-        this.sailFactor = sailFactor;
-        this.windFactor = windFactor;
+    public TransformMessage(Transform transform) {
+        this.transform.set(transform);
         this.timestamp = Instant.now();
     }
 
@@ -60,28 +56,12 @@ public class AnimPacket implements Message {
         return timestamp;
     }
 
-    public float getFlagFactor() {
-        return flagFactor;
+    public void setTransform(Transform transform) {
+        this.transform.set(transform);
     }
 
-    public void setFlagFactor(float flagFactor) {
-        this.flagFactor = flagFactor;
-    }
-
-    public float getSailFactor() {
-        return sailFactor;
-    }
-
-    public void setSailFactor(float sailFactor) {
-        this.sailFactor = sailFactor;
-    }
-
-    public float getWindFactor() {
-        return windFactor;
-    }
-
-    public void setWindFactor(float windFactor) {
-        this.windFactor = windFactor;
+    public Transform getTransform() {
+        return transform;
     }
 
     @Override

@@ -496,6 +496,8 @@ public class TeaReflectionSupplier implements ReflectionSupplier {
         TeaReflectionSupplier.addReflectionClass("org.ngengine.auth.AuthSelectionWindow");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.auth.AuthStrategy");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.auth.Nip46AuthStrategy");
+        TeaReflectionSupplier.addReflectionClass("org.ngengine.auth.nip07.Nip07Auth");
+        TeaReflectionSupplier.addReflectionClass("org.ngengine.auth.nip07.Nip07AuthWindow");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.auth.nip46.Nip46Auth");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.auth.nip46.Nip46AuthWindow");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.auth.nip46.Nip46ChallengeWindow");
@@ -532,9 +534,9 @@ public class TeaReflectionSupplier implements ReflectionSupplier {
         TeaReflectionSupplier.addReflectionClass("org.ngengine.demo.son.ocean.IBOcean");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.demo.son.ocean.IBOceanLayer");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.demo.son.ocean.OceanAppState");
-        TeaReflectionSupplier.addReflectionClass("org.ngengine.demo.son.packets.AnimPacket");
-        TeaReflectionSupplier.addReflectionClass("org.ngengine.demo.son.packets.ShotPacket");
-        TeaReflectionSupplier.addReflectionClass("org.ngengine.demo.son.packets.TransformPacket");
+        TeaReflectionSupplier.addReflectionClass("org.ngengine.demo.son.packets.AnimMessage");
+        TeaReflectionSupplier.addReflectionClass("org.ngengine.demo.son.packets.ShotMessage");
+        TeaReflectionSupplier.addReflectionClass("org.ngengine.demo.son.packets.TransformMessage");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.demo.son.utils.FlipBookTexture");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.demo.son.utils.GridMesh");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.demo.son.utils.ReflectionBaker");
@@ -576,6 +578,7 @@ public class TeaReflectionSupplier implements ReflectionSupplier {
         TeaReflectionSupplier.addReflectionClass("org.ngengine.network.LocalLobby");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.network.protocol.messages.BinaryMessage");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.network.protocol.messages.ByteDataMessage");
+        TeaReflectionSupplier.addReflectionClass("org.ngengine.network.protocol.messages.ClassRegistrationAckMessage");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.network.protocol.messages.CompressedMessage");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.network.protocol.messages.TextDataMessage");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.network.protocol.messages.TextMessage");
