@@ -165,7 +165,9 @@ public class NetworkControl extends AbstractControl {
 
                 Vector3f pPos = p.getValue().getWorldTranslation();
                 float dist = pPos.distance(localTransform.getTranslation());
-                double scale = Math.clamp((double) (dist / maxDistance), 0.0, 1.0);
+                double scale =(double) (dist / maxDistance);
+                if( scale > 1.0 ) scale = 1.0;
+                if( scale < 0.0 ) scale = 0.0;
                 double expectedRate = ((1.0 - scale) * maxRate) + (scale * minRate);
 
                 Long lastSentPosition = p.getKey().getAttribute("lspp");
