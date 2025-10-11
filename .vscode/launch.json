@@ -6,13 +6,7 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Current File",
-            "request": "launch",
-            "mainClass": "${file}"
-        },
-        {
-            "type": "java",
-            "name": "DesktopLauncher",
+            "name": "Debug Application",
             "request": "launch",
             "mainClass": "org.ngengine.platform.DesktopLauncher",
             "projectName": "platform-desktop",
@@ -24,7 +18,8 @@
                     "__GL_THREADED_OPTIMIZATIONS": "0"
                 }
             },
-            "vmArgs": "-ea -Djava.util.logging.config.file=${workspaceFolder}/dev-logging.properties"
+            "vmArgs": "-ea -Pthreadwarden=true -Djava.util.logging.config.file=${workspaceFolder}/dev-logging.properties",
+            
         }
     ]
 }

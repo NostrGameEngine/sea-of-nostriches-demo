@@ -1,7 +1,6 @@
 package org.ngengine.platform;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -412,7 +411,6 @@ public class TeaReflectionSupplier implements ReflectionSupplier {
         TeaReflectionSupplier.addReflectionClass("com.jme3.texture.TextureCubeMap");
         TeaReflectionSupplier.addReflectionClass("com.jme3.texture.TextureProcessor");
         TeaReflectionSupplier.addReflectionClass("com.jme3.texture.plugins.DDSLoader");
-        TeaReflectionSupplier.addReflectionClass("com.jme3.texture.plugins.HDRLoader");
         TeaReflectionSupplier.addReflectionClass("com.jme3.texture.plugins.PFMLoader");
         TeaReflectionSupplier.addReflectionClass("com.jme3.texture.plugins.SVGTextureKey");
         TeaReflectionSupplier.addReflectionClass("com.jme3.texture.plugins.TGALoader");
@@ -619,7 +617,7 @@ public class TeaReflectionSupplier implements ReflectionSupplier {
         TeaReflectionSupplier.addReflectionClass("org.ngengine.player.PlayerManagerComponent");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.web.context.HeapAllocator");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.web.context.WebSystem");
-        TeaReflectionSupplier.addReflectionClass("org.ngengine.web.filesystem.CanvasImageLoader");
+        TeaReflectionSupplier.addReflectionClass("org.ngengine.web.filesystem.WebImageLoader");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.web.filesystem.WebLocator");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.web.filesystem.WebResourceLoader");
         TeaReflectionSupplier.addReflectionClass("org.ngengine.web.json.TeaJSONParser");
@@ -648,7 +646,6 @@ public class TeaReflectionSupplier implements ReflectionSupplier {
 
     @Override
     public Collection<String> getAccessibleFields(ReflectionContext context, String className) {
-        // System.out.println("Requesting fields for " + className);
         Set<String> fields = new HashSet<>();
         ClassReader cls = context.getClassSource().get(className);
         if (cls == null) {
@@ -664,7 +661,6 @@ public class TeaReflectionSupplier implements ReflectionSupplier {
                         String name = field.getName();
                         fields.add(name);
                     }
-                    // System.out.println("Providing reflection for " + className + ": " + cls.getMethods().size() + " methods, " + fields.size() + " fields.");
                 }
             }
         } catch (ClassNotFoundException e) {
@@ -701,7 +697,6 @@ public class TeaReflectionSupplier implements ReflectionSupplier {
 
     @Override
     public Collection<MethodDescriptor> getAccessibleMethods(ReflectionContext context, String className) {
-        // System.out.println("Requesting methods for " + className);
         Set<MethodDescriptor> methods = new HashSet<>();
 
         ClassReader cls = context.getClassSource().get(className);
@@ -722,13 +717,7 @@ public class TeaReflectionSupplier implements ReflectionSupplier {
                     }
        
                     boolean canHaveReflection = true;     
-                    // for (int i = 0; i < method.parameterCount(); i++) {
-                    //     ValueType t = method.parameterType(i);
-                    //     canHaveReflection = isWhitelistedType(context, t);
-                    //     if (!canHaveReflection) {
-                    //         break;
-                    //     }
-                    // }
+                 
                     
                     if (canHaveReflection && !isConstructor) {
                         ValueType t = method.getResultType();
@@ -738,13 +727,10 @@ public class TeaReflectionSupplier implements ReflectionSupplier {
                     if (!canHaveReflection) {
                         continue;
                     }
-// 
-                    // System.out.println("Allowing reflection for " + className + " method " + method.getName());
 
                     MethodDescriptor descriptor = method.getDescriptor();
                     methods.add(descriptor);
                 }
-                // System.out.println("Providing reflection for " + className + ": " + methods.size() + " methods, " + cls.getFields().size() + " fields (" + constructors + " constructors).");
             }
         } catch (ClassNotFoundException e) {
             new RuntimeException(e);

@@ -41,70 +41,57 @@ dependencyResolutionManagement {
             url = uri("https://central.sonatype.com/repository/maven-snapshots")
         }
         maven { url = uri("https://teavm.org/maven/repository") }
-
+        ivy {
+            name = "Node.js"
+            setUrl("https://nodejs.org/dist/")
+            patternLayout {
+                artifact("v[revision]/[artifact](-v[revision]-[classifier]).[ext]")
+            }
+            metadataSources {
+                artifact()
+            }
+            content {
+                includeModule("org.nodejs", "node")
+            }
+        }
     }
 }
 
-def localPropsFile = file("gradle-local.properties")
-def localProps = new Properties()
 
-if (localPropsFile.exists()) {
-    localPropsFile.withInputStream { localProps.load(it) }
+if (!gradle.hasProperty('ext')) {
+    gradle.ext {}
 }
 
-// def ngengineDevDir = localProps.getProperty("ngengineDevDir")
-// if (ngengineDevDir != null) {
-//     println "Including ngengine from $ngengineDevDir"
-//     includeBuild(ngengineDevDir) {
-//         dependencySubstitution {
-//             all { dep ->
-//                 if (dep.requested instanceof ModuleComponentSelector &&
-//                     dep.requested.group == "org.ngengine" &&
-//                     dep.requested.module.startsWith("nge") &&
-//                     !dep.requested.module.startsWith("nge-platform-")                    
-//                     ) {
-//                     dep.useTarget(project(":${dep.requested.module}"))
-//                 }
-//             }
-//         }
-//     }
-// } 
+gradle.beforeProject { p ->
+    if (p == p.rootProject) {
+        p.tasks.register("cleanDist", org.gradle.api.tasks.Delete) {
+            delete p.layout.projectDirectory.dir("dist")
+        }
+        p.gradle.projectsEvaluated {
+            def cleanTask = p.tasks.findByName("clean") ?: p.tasks.register("clean")
+            cleanTask.configure { dependsOn("cleanDist") }
+        }
+    }
+}
 
-// def ngePlatformsDevDir = localProps.getProperty("ngePlatformsDevDir")
-// if (ngePlatformsDevDir != null) {
-//     println "Including nge-platform from $ngePlatformsDevDir"
-//     includeBuild(ngePlatformsDevDir) {
-//         dependencySubstitution {
-//             all { dep ->
-//                 if (dep.requested instanceof ModuleComponentSelector &&
-//                     dep.requested.group == "org.ngengine" &&
-//                     dep.requested.module.startsWith("nge-platform-")                    
-//                     ) {
-//                     dep.useTarget(project(":${dep.requested.module}"))
-//                 }
-//             }
-//         }
-//     }
-// } 
+// import json properties
+apply from: "${rootDir}/gradle/libs/props.gradle"
+def ngeConfig = gradle.ext.loadNgeAppProperties("${rootDir}/app/src/main/resources/ngeapp.json")
+gradle.beforeProject { p ->
+    ngeConfig.each { k, v -> p.ext.set(k, v) }
+    if (ngeConfig.Version)   p.version = ngeConfig.Version.toString()
+    if (ngeConfig.Namespace) p.group   = ngeConfig.Namespace.toString()
+}
 
-
-
- 
-rootProject.name = settings.appName
+print("Build with config: "+ngeConfig)
+rootProject.name = ngeConfig.ShortName
 include('app')
 
-if(withDesktopPlatform) {
-    include('platform-desktop')
-}
+// ENABLE DESKTOP BUILD TARGET
+include('platform-desktop')
 
-// if (withAndroidPlatform) {
-//     include('platform-android')
-// }
+// ENABLE ANDROID BUILD TARGET
+include('platform-android')
 
-// if(withWebPlatform || withIOSCapacitorPlatform){
-    include('platform-web')
-// }
-
-// if(withIOSCapacitorPlatform){
-    include('platform-capacitor')
-// }
+// ENABLE WEB BUILD TARGET
+include('platform-web')

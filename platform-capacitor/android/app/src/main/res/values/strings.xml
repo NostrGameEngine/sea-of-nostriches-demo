@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">Sea of Nostriches</string>
-    <string name="title_activity_main">Sea of Nostriches</string>
-    <string name="package_name">org.ngengine.demo.son</string>
-    <string name="custom_url_scheme">org.ngengine.demo.son</string>
-</resources>

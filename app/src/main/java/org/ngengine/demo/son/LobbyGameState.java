@@ -69,8 +69,12 @@ public class LobbyGameState implements Component<NostrSigner>, MainViewPortFragm
         boolean firstTime,
         NostrSigner signer
     ) {
-        mng =
-            new LobbyManager(signer, Settings.GAME_NAME, Settings.GAME_VERSION, runner);
+        mng = new LobbyManager(
+            componentMng.getSettings().getNostrRelays().get("lobby"),
+            signer, componentMng.getSettings().get("Title"), 
+            componentMng.getSettings().get("Version"),
+            runner
+        );
 
         NWindowManagerComponent windowManager = componentMng.getComponent(NWindowManagerComponent.class);
         windowManager.showWindow(

@@ -12,3 +12,5 @@ node_modules/
 .sourcemaps
 .settings
 platform-web/.env.nostr-deploy.local
+local.properties
+trash

@@ -58,12 +58,6 @@
       "type": "[Lcom.simsilica.lemur.focus.FocusChangeListener;"
     },
     {
-      "type": "[Lcom.simsilica.lemur.input.AnalogFunctionListener;"
-    },
-    {
-      "type": "[Lcom.simsilica.lemur.input.StateFunctionListener;"
-    },
-    {
       "type": "[Ljava.awt.event.MouseMotionListener;"
     },
     {
@@ -76,106 +70,7 @@
       ]
     },
     {
-      "type": "com.bulletphysics.collision.dispatch.CompoundCollisionAlgorithm",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.bulletphysics.collision.dispatch.ConvexConvexAlgorithm",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
       "type": "com.bulletphysics.collision.dispatch.UnionFind$Element",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.bulletphysics.collision.narrowphase.DiscreteCollisionDetectorInterface$ClosestPointInput",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.bulletphysics.collision.narrowphase.GjkEpaSolver$Face",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.bulletphysics.collision.narrowphase.GjkEpaSolver$He",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.bulletphysics.collision.narrowphase.GjkEpaSolver$Mkv",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.bulletphysics.collision.narrowphase.ManifoldPoint",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.bulletphysics.collision.narrowphase.PersistentManifold",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.bulletphysics.collision.narrowphase.VoronoiSimplexSolver$SubSimplexClosestResult",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.bulletphysics.dynamics.constraintsolver.SolverBody",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.bulletphysics.dynamics.constraintsolver.SolverConstraint",
       "methods": [
         {
           "name": "<init>",
@@ -274,15 +169,6 @@
       "type": "com.jme3.cursors.plugins.CursorLoader"
     },
     {
-      "type": "com.jme3.export.SavableWrapSerializable",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
       "type": "com.jme3.export.binary.BinaryLoader"
     },
     {
@@ -290,24 +176,6 @@
       "methods": [
         {
           "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.jme3.light.PointLight",
-      "methods": [
-        {
-          "name": "clone",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.jme3.light.SpotLight",
-      "methods": [
-        {
-          "name": "clone",
           "parameterTypes": []
         }
       ]
@@ -410,10 +278,6 @@
         {
           "name": "<init>",
           "parameterTypes": []
-        },
-        {
-          "name": "clone",
-          "parameterTypes": []
         }
       ]
     },
@@ -479,15 +343,6 @@
     },
     {
       "type": "com.jme3.scene.plugins.gltf.GltfLoader",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "com.jme3.scene.plugins.gltf.LightsPunctualExtensionLoader",
       "methods": [
         {
           "name": "<init>",
@@ -581,9 +436,6 @@
     },
     {
       "type": "com.jme3.texture.plugins.AWTLoader"
-    },
-    {
-      "type": "com.jme3.texture.plugins.AWTWebpImageLoader"
     },
     {
       "type": "com.jme3.texture.plugins.DDSLoader"
@@ -1234,8 +1086,7 @@
     },
     {
       "type": "java.nio.DirectFloatBufferU",
-      "allDeclaredFields": true,
-      "unsafeAllocated": true
+      "allDeclaredFields": true
     },
     {
       "type": "java.nio.DirectIntBufferU",
@@ -1298,12 +1149,6 @@
     },
     {
       "type": "java.util.Arrays$ArrayList"
-    },
-    {
-      "type": "java.util.Collections$UnmodifiableCollection"
-    },
-    {
-      "type": "java.util.Collections$UnmodifiableMap"
     },
     {
       "type": "java.util.Collections$UnmodifiableRandomAccessList"
@@ -2494,15 +2339,6 @@
       ]
     },
     {
-      "type": "org.ngengine.demo.son.LoadingWindow",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
       "type": "org.ngengine.demo.son.WebpImageLoader",
       "methods": [
         {
@@ -2546,26 +2382,6 @@
     },
     {
       "type": "org.ngengine.demo.son.ocean.IBOceanLayer",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "org.ngengine.demo.son.packets.AnimPacket",
-      "allDeclaredFields": true,
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "org.ngengine.demo.son.packets.TransformPacket",
-      "allDeclaredFields": true,
       "methods": [
         {
           "name": "<init>",
@@ -2722,9 +2538,6 @@
     },
     {
       "type": "org.ngengine.webp.WebpImageLoader"
-    },
-    {
-      "type": "org.slf4j.jul.JULServiceProvider"
     },
     {
       "type": "sun.awt.X11.XToolkit",
@@ -3194,9 +3007,6 @@
     },
     {
       "type": "org.ngengine.nostr4j.signer.NostrNIP46Signer"
-    },
-    {
-      "type": "org.ngengine.store.DataStore$SerializableEntry"
     }
   ],
   "jni": [
@@ -3826,12 +3636,6 @@
     {
       "type": "java.lang.System",
       "methods": [
-        {
-          "name": "getProperty",
-          "parameterTypes": [
-            "java.lang.String"
-          ]
-        },
         {
           "name": "load",
           "parameterTypes": [
@@ -4834,220 +4638,6 @@
         },
         {
           "name": "xid"
-        }
-      ]
-    },
-    {
-      "type": "tel.schich.libdatachannel.CandidatePair",
-      "methods": [
-        {
-          "name": "parse",
-          "parameterTypes": [
-            "java.lang.String",
-            "java.lang.String"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "tel.schich.libdatachannel.DataChannelReliability",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": [
-            "boolean",
-            "boolean",
-            "long",
-            "int"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "tel.schich.libdatachannel.LibDataChannel",
-      "methods": [
-        {
-          "name": "freeOnGarbageCollection",
-          "parameterTypes": [
-            "java.lang.Object",
-            "long"
-          ]
-        },
-        {
-          "name": "log",
-          "parameterTypes": [
-            "int",
-            "java.lang.String"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "tel.schich.libdatachannel.PeerConnectionListener",
-      "methods": [
-        {
-          "name": "onChannelAvailable",
-          "parameterTypes": [
-            "int"
-          ]
-        },
-        {
-          "name": "onChannelBinaryMessage",
-          "parameterTypes": [
-            "int",
-            "java.nio.ByteBuffer"
-          ]
-        },
-        {
-          "name": "onChannelBufferedAmountLow",
-          "parameterTypes": [
-            "int"
-          ]
-        },
-        {
-          "name": "onChannelClosed",
-          "parameterTypes": [
-            "int"
-          ]
-        },
-        {
-          "name": "onChannelError",
-          "parameterTypes": [
-            "int",
-            "java.lang.String"
-          ]
-        },
-        {
-          "name": "onChannelOpen",
-          "parameterTypes": [
-            "int"
-          ]
-        },
-        {
-          "name": "onChannelTextMessage",
-          "parameterTypes": [
-            "int",
-            "java.lang.String"
-          ]
-        },
-        {
-          "name": "onDataChannel",
-          "parameterTypes": [
-            "int"
-          ]
-        },
-        {
-          "name": "onGatheringStateChange",
-          "parameterTypes": [
-            "int"
-          ]
-        },
-        {
-          "name": "onIceStateChange",
-          "parameterTypes": [
-            "int"
-          ]
-        },
-        {
-          "name": "onLocalCandidate",
-          "parameterTypes": [
-            "java.lang.String",
-            "java.lang.String"
-          ]
-        },
-        {
-          "name": "onLocalDescription",
-          "parameterTypes": [
-            "java.lang.String",
-            "java.lang.String"
-          ]
-        },
-        {
-          "name": "onSignalingStateChange",
-          "parameterTypes": [
-            "int"
-          ]
-        },
-        {
-          "name": "onStateChange",
-          "parameterTypes": [
-            "int"
-          ]
-        },
-        {
-          "name": "onTrack",
-          "parameterTypes": [
-            "int"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "tel.schich.libdatachannel.exception.FailureException",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": [
-            "java.lang.String"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "tel.schich.libdatachannel.exception.InvalidException",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": [
-            "java.lang.String"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "tel.schich.libdatachannel.exception.NativeOperationException",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": [
-            "java.lang.String",
-            "int",
-            "java.lang.String"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "tel.schich.libdatachannel.exception.NotAvailableException",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": [
-            "java.lang.String"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "tel.schich.libdatachannel.exception.TooSmallException",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": [
-            "java.lang.String"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "tel.schich.libdatachannel.exception.UnknownFailureException",
-      "methods": [
-        {
-          "name": "<init>",
-          "parameterTypes": [
-            "int",
-            "java.lang.String"
-          ]
         }
       ]
     }

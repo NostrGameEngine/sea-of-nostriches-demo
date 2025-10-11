@@ -41,11 +41,13 @@ import com.jme3.system.AppSettings;
 import com.jme3.util.TempVars;
 import org.ngengine.auth.AuthSelectionWindow;
 import org.ngengine.auth.AuthStrategy;
+import org.ngengine.auth.Nip46AuthStrategy;
 import org.ngengine.components.Component;
 import org.ngengine.components.ComponentManager;
 import org.ngengine.components.fragments.AppFragment;
 import org.ngengine.components.fragments.MainViewPortFragment;
 import org.ngengine.gui.win.NWindowManagerComponent;
+import org.ngengine.nostr4j.nip46.Nip46AppMetadata;
 import org.ngengine.player.PlayerManagerComponent;
 import org.ngengine.runner.Runner;
 import org.ngengine.store.DataStoreProvider;
@@ -77,14 +79,15 @@ public class HelloGameState implements Component<Object>, AppFragment, MainViewP
         PlayerManagerComponent playerManager = fragmentManager.getComponent(PlayerManagerComponent.class);
 
         // create an authentication strategy that toggles the lobby app state when a signer is available
-        AuthStrategy authStrategy = Settings.authStrategy(
-            settings,
-            signer -> {
-                fragmentManager.enableComponent(LobbyGameState.class, signer);
-            },
-            playerManager,
-            dataStoreProvider.getDataStore("auth")
-        );
+        AuthStrategy authStrategy = new AuthStrategy(signer -> {
+            fragmentManager.enableComponent(LobbyGameState.class, signer);
+        })
+            .enableStore(dataStoreProvider.getDataStore("auth"))
+            .enableNip46RemoteIdentity(
+                    new Nip46AuthStrategy(fragmentManager.getSettings().getNostrRelays().get("nip46"))
+                            .setMetadata(new Nip46AppMetadata().setName("ngengine.org - Unnamed App")))
+            .enableLocalIdentity()
+            .setPlayerManager(playerManager);
 
         // open auth window
         NWindowManagerComponent windowManager = fragmentManager.getComponent(NWindowManagerComponent.class);
