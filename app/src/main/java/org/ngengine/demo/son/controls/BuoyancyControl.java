@@ -39,12 +39,6 @@ import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.control.RigidBodyControl;
-import com.jme3.effect.ParticleEmitter;
-import com.jme3.effect.ParticleMesh.Type;
-import com.jme3.effect.influencers.NewtonianParticleInfluencer;
-import com.jme3.effect.shapes.EmitterSphereShape;
-import com.jme3.material.Material;
-import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
@@ -85,8 +79,6 @@ public class BuoyancyControl extends AbstractControl implements PhysicsTickListe
     private float objectWidth = 0.5f; // Width of the object in meters
 
     private AudioNode splash;
-    private ParticleEmitter splashParticles;
-    private Material splashParticlesMaterial;
 
     public void setAppState(OceanAppState appState) {
         this.appState = appState;
@@ -97,18 +89,7 @@ public class BuoyancyControl extends AbstractControl implements PhysicsTickListe
             node.attachChild(splash);
             splash.setPositional(true);
 
-            splashParticles = new ParticleEmitter("Splash Particles", Type.Triangle, 30);
-            splashParticles.setInWorldSpace(false);
-            splashParticles.setShape(new EmitterSphereShape(new Vector3f(0, 0, 0), 1f));
-            splashParticles.setParticleInfluencer(new NewtonianParticleInfluencer());
-            splashParticles.setParticlesPerSec(0);
-
-            node.attachChild(splashParticles);
-
-            splashParticlesMaterial = new Material(appState.getAssetManager(), "Common/MatDefs/Misc/Particle.j3md");
-            // splashParticlesMaterial.setTexture("Texture",
-            //         appState.getApplication().getAssetManager().loadTexture("Effects/Explosion/flame.png"));
-            splashParticles.setMaterial(splashParticlesMaterial);
+        
         }
     }
 
@@ -196,27 +177,7 @@ public class BuoyancyControl extends AbstractControl implements PhysicsTickListe
                 splash.setPitch(0.9f);
                 splash.setVolume(2f); //Math.clamp(d-0.4f, 0.4f, 1f ));
                 splash.play();
-                splashParticles.setLowLife(1.9f);
-                splashParticles.setHighLife(1.9f);
-                splashParticles.setEndSize(1.8f);
-                splashParticles.setStartSize(.3f);
-                splashParticles.setStartColor(new ColorRGBA(35.0f / 255.0f, 0.0f, 110f / 255.0f, 1f).setAlpha(0.8f));
-                splashParticles.setEndColor(new ColorRGBA(35.0f / 255.0f, 0.0f, 110f / 255.0f, 1f).setAlpha(0.0f));
-
-                EmitterSphereShape shape = (EmitterSphereShape) splashParticles.getShape();
-                shape.setRadius(8f);
-                NewtonianParticleInfluencer rp = (NewtonianParticleInfluencer) splashParticles.getParticleInfluencer();
-                // rp.setRadialVelocity(20f);
-                // rp.setSurfaceTangentFactor(0f);
-                // rp.setVelocityVariation(0f);
-                rp.setVelocityVariation(0.2f);
-                rp.setNormalVelocity(1f);
-                // rp.setRadialVelocity(100f);
-                rp.setInitialVelocity(new Vector3f(0, 0.6f, 0));
-                splashParticles.setGravity(0, 12.81f, 0);
-                // rp.setHorizontal(true);
-
-                splashParticles.emitParticles(22);
+          
             }
         }
     }

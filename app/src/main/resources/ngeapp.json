@@ -8,13 +8,14 @@
     "Resizable": true,
     "Title": "Sea of Nostriches Demo",
     "Version": "2.0.0",
-    "VersionCode": 1,
+    "VersionCode": 2,
     "ShortName": "son",
     "Namespace":"org.ngengine.son",
     "Copyright": "",
     "VSync": true,
     "GammaCorrection": true,
     "ScreenOrientation": "landscape",
+    "run_in_worker": false,
     "relays": {
         "blossom": {
             "default": [

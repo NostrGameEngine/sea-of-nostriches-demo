@@ -270,7 +270,7 @@ public class PlayGameState
 
         assetManager.runInLoaderThread(
             t -> {
-                Node playerSpatial = (Node) assetManager.loadModel("Models/boat/boat.gltf");
+                Node playerSpatial = (Node) assetManager.loadModel("Models/boat/boat.glb");
                 playerSpatial.addControl(new BoatAnimationControl());
 
                 playerSpatial.depthFirstTraversal(sx -> {

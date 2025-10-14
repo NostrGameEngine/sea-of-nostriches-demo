@@ -216,7 +216,7 @@ tasks.named('compileJava').configure {
 teavm.js {
     addedToWebApp = false
     mainClass = "org.ngengine.platform.WebLauncher"
-    // obfuscated = false
+    obfuscated = false
     // debugInformation = true
     strict= false
     outOfProcess=false
