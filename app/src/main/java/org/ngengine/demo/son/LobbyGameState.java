@@ -72,7 +72,7 @@ public class LobbyGameState implements Component<NostrSigner>, MainViewPortFragm
         mng = new LobbyManager(
             componentMng.getSettings().getNostrRelays().get("lobby"),
             signer, componentMng.getSettings().get("Title"), 
-            componentMng.getSettings().get("Version"),
+            componentMng.getSettings().getNumber("VersionCode", 0).intValue(),
             runner
         );
 
