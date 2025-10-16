@@ -278,6 +278,10 @@
         {
           "name": "<init>",
           "parameterTypes": []
+        },
+        {
+          "name": "clone",
+          "parameterTypes": []
         }
       ]
     },
@@ -339,7 +343,13 @@
       ]
     },
     {
-      "type": "com.jme3.scene.plugins.gltf.GlbLoader"
+      "type": "com.jme3.scene.plugins.gltf.GlbLoader",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "com.jme3.scene.plugins.gltf.GltfLoader",
@@ -436,6 +446,9 @@
     },
     {
       "type": "com.jme3.texture.plugins.AWTLoader"
+    },
+    {
+      "type": "com.jme3.texture.plugins.AWTWebpImageLoader"
     },
     {
       "type": "com.jme3.texture.plugins.DDSLoader"
@@ -535,6 +548,11 @@
     },
     {
       "type": "com.simsilica.lemur.Button",
+      "fields": [
+        {
+          "name": "lemurStyleAttributeMap"
+        }
+      ],
       "methods": [
         {
           "name": "initializeDefaultStyles",
@@ -605,6 +623,11 @@
     },
     {
       "type": "com.simsilica.lemur.Container",
+      "fields": [
+        {
+          "name": "lemurStyleAttributeMap"
+        }
+      ],
       "methods": [
         {
           "name": "initializeDefaultStyles",
@@ -631,6 +654,11 @@
     },
     {
       "type": "com.simsilica.lemur.Label",
+      "fields": [
+        {
+          "name": "lemurStyleAttributeMap"
+        }
+      ],
       "methods": [
         {
           "name": "initializeDefaultStyles",
@@ -694,10 +722,20 @@
       ]
     },
     {
-      "type": "com.simsilica.lemur.PasswordField"
+      "type": "com.simsilica.lemur.PasswordField",
+      "fields": [
+        {
+          "name": "lemurStyleAttributeMap"
+        }
+      ]
     },
     {
       "type": "com.simsilica.lemur.TextField",
+      "fields": [
+        {
+          "name": "lemurStyleAttributeMap"
+        }
+      ],
       "methods": [
         {
           "name": "initializeDefaultStyles",
@@ -1055,6 +1093,9 @@
       "type": "java.lang.Class"
     },
     {
+      "type": "java.lang.Long"
+    },
+    {
       "type": "java.lang.String"
     },
     {
@@ -1086,7 +1127,8 @@
     },
     {
       "type": "java.nio.DirectFloatBufferU",
-      "allDeclaredFields": true
+      "allDeclaredFields": true,
+      "unsafeAllocated": true
     },
     {
       "type": "java.nio.DirectIntBufferU",
@@ -1149,6 +1191,9 @@
     },
     {
       "type": "java.util.Arrays$ArrayList"
+    },
+    {
+      "type": "java.util.Collections$UnmodifiableMap"
     },
     {
       "type": "java.util.Collections$UnmodifiableRandomAccessList"
@@ -2273,10 +2318,26 @@
     },
     {
       "type": "org.ngengine.auth.AuthSelectionWindow",
+      "fields": [
+        {
+          "name": "lemurStyleAttributeMap"
+        }
+      ],
       "methods": [
         {
           "name": "<init>",
           "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.ngengine.auth.nip07.Nip07Auth",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.ngengine.auth.AuthStrategy"
+          ]
         }
       ]
     },
@@ -2322,6 +2383,11 @@
     },
     {
       "type": "org.ngengine.auth.nsec.NsecAuthWindow",
+      "fields": [
+        {
+          "name": "lemurStyleAttributeMap"
+        }
+      ],
       "methods": [
         {
           "name": "<init>",
@@ -2331,6 +2397,25 @@
     },
     {
       "type": "org.ngengine.auth.stored.StoredAuthSelectionWindow",
+      "fields": [
+        {
+          "name": "lemurStyleAttributeMap"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.ngengine.demo.son.LoadingWindow",
+      "fields": [
+        {
+          "name": "lemurStyleAttributeMap"
+        }
+      ],
       "methods": [
         {
           "name": "<init>",
@@ -2349,6 +2434,11 @@
     },
     {
       "type": "org.ngengine.demo.son.gui.LobbyManagerWindow",
+      "fields": [
+        {
+          "name": "lemurStyleAttributeMap"
+        }
+      ],
       "methods": [
         {
           "name": "<init>",
@@ -2364,6 +2454,20 @@
     },
     {
       "type": "org.ngengine.demo.son.gui.LobbyManagerWindow$NewMatchWindow",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.ngengine.demo.son.gui.NewMatchWindow",
+      "fields": [
+        {
+          "name": "lemurStyleAttributeMap"
+        }
+      ],
       "methods": [
         {
           "name": "<init>",
@@ -2390,7 +2494,41 @@
       ]
     },
     {
+      "type": "org.ngengine.demo.son.packets.AnimMessage",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.ngengine.demo.son.packets.TransformMessage",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.ngengine.export.NostrPrivateKeySavableWrapper",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "org.ngengine.gui.components.NIconButton",
+      "fields": [
+        {
+          "name": "lemurStyleAttributeMap"
+        }
+      ],
       "methods": [
         {
           "name": "setColor",
@@ -2413,7 +2551,12 @@
       ]
     },
     {
-      "type": "org.ngengine.gui.components.NLabel"
+      "type": "org.ngengine.gui.components.NLabel",
+      "fields": [
+        {
+          "name": "lemurStyleAttributeMap"
+        }
+      ]
     },
     {
       "type": "org.ngengine.gui.components.NLoadingSpinner",
@@ -2450,25 +2593,55 @@
       ]
     },
     {
-      "type": "org.ngengine.gui.components.NTextInput"
+      "type": "org.ngengine.gui.components.NTextInput",
+      "fields": [
+        {
+          "name": "lemurStyleAttributeMap"
+        }
+      ]
     },
     {
-      "type": "org.ngengine.gui.components.NVSpacer"
+      "type": "org.ngengine.gui.components.NVSpacer",
+      "fields": [
+        {
+          "name": "lemurStyleAttributeMap"
+        }
+      ]
     },
     {
-      "type": "org.ngengine.gui.components.containers.NColumn"
+      "type": "org.ngengine.gui.components.containers.NColumn",
+      "fields": [
+        {
+          "name": "lemurStyleAttributeMap"
+        }
+      ]
     },
     {
       "type": "org.ngengine.gui.components.containers.NContainer"
     },
     {
-      "type": "org.ngengine.gui.components.containers.NMultiPageList"
+      "type": "org.ngengine.gui.components.containers.NMultiPageList",
+      "fields": [
+        {
+          "name": "lemurStyleAttributeMap"
+        }
+      ]
     },
     {
-      "type": "org.ngengine.gui.components.containers.NPanel"
+      "type": "org.ngengine.gui.components.containers.NPanel",
+      "fields": [
+        {
+          "name": "lemurStyleAttributeMap"
+        }
+      ]
     },
     {
-      "type": "org.ngengine.gui.components.containers.NRow"
+      "type": "org.ngengine.gui.components.containers.NRow",
+      "fields": [
+        {
+          "name": "lemurStyleAttributeMap"
+        }
+      ]
     },
     {
       "type": "org.ngengine.gui.svg.SVGLoader",
@@ -2487,6 +2660,21 @@
     },
     {
       "type": "org.ngengine.gui.win.std.NHud",
+      "fields": [
+        {
+          "name": "lemurStyleAttributeMap"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.ngengine.network.protocol.messages.ClassRegistrationAckMessage",
+      "allDeclaredFields": true,
       "methods": [
         {
           "name": "<init>",
@@ -2538,6 +2726,9 @@
     },
     {
       "type": "org.ngengine.webp.WebpImageLoader"
+    },
+    {
+      "type": "org.slf4j.jul.JULServiceProvider"
     },
     {
       "type": "sun.awt.X11.XToolkit",
@@ -4638,6 +4829,220 @@
         },
         {
           "name": "xid"
+        }
+      ]
+    },
+    {
+      "type": "tel.schich.libdatachannel.CandidatePair",
+      "methods": [
+        {
+          "name": "parse",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "tel.schich.libdatachannel.DataChannelReliability",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "boolean",
+            "boolean",
+            "long",
+            "int"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "tel.schich.libdatachannel.LibDataChannel",
+      "methods": [
+        {
+          "name": "freeOnGarbageCollection",
+          "parameterTypes": [
+            "java.lang.Object",
+            "long"
+          ]
+        },
+        {
+          "name": "log",
+          "parameterTypes": [
+            "int",
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "tel.schich.libdatachannel.PeerConnectionListener",
+      "methods": [
+        {
+          "name": "onChannelAvailable",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "onChannelBinaryMessage",
+          "parameterTypes": [
+            "int",
+            "java.nio.ByteBuffer"
+          ]
+        },
+        {
+          "name": "onChannelBufferedAmountLow",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "onChannelClosed",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "onChannelError",
+          "parameterTypes": [
+            "int",
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "onChannelOpen",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "onChannelTextMessage",
+          "parameterTypes": [
+            "int",
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "onDataChannel",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "onGatheringStateChange",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "onIceStateChange",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "onLocalCandidate",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "onLocalDescription",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "onSignalingStateChange",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "onStateChange",
+          "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "onTrack",
+          "parameterTypes": [
+            "int"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "tel.schich.libdatachannel.exception.FailureException",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "tel.schich.libdatachannel.exception.InvalidException",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "tel.schich.libdatachannel.exception.NativeOperationException",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "int",
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "tel.schich.libdatachannel.exception.NotAvailableException",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "tel.schich.libdatachannel.exception.TooSmallException",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "tel.schich.libdatachannel.exception.UnknownFailureException",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "int",
+            "java.lang.String"
+          ]
         }
       ]
     }
